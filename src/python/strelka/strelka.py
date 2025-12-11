@@ -14,7 +14,7 @@ import uuid
 from types import FrameType
 from typing import Generator, Optional, Tuple
 from urllib.parse import urlparse
-
+import requests
 import inflection
 import magic
 import redis
@@ -26,6 +26,10 @@ from tldextract import TLDExtract
 
 from . import __namespace__
 from .telemetry.traces import get_tracer
+
+from kafka import KafkaProducer
+import json
+
 
 
 class RequestTimeout(Exception):
@@ -548,13 +552,37 @@ class Backend(object):
 
                     # Collect events for local-only
                     events.append(event)
-
+                    producer = KafkaProducer(
+                    bootstrap_servers="kafka:29092",   # جوّه الدوكر
+                    value_serializer=lambda v: json.dumps(v).encode()
+                )
+                    ANALYSIS_TOPIC = "analysis"
                     # Send event back to Redis coordinator
                     if pipeline:
                         pipeline.rpush(f"event:{root_id}", format_event(event))
                         pipeline.expireat(f"event:{root_id}", expire_at)
                         pipeline.execute()
-
+                        try:
+                            if isinstance(event, bytes):
+                                event = json.loads(event.decode("utf-8"))
+                            elif isinstance(event, str):
+                                event = json.loads(event)
+                            name = file.name
+                            if "___" in name:
+                                uuid_part, filename_part = name.split("___", 1)
+                            else:
+                                uuid_part = "unknown"
+                            event["email.uuid"] = uuid_part
+                        except Exception as e:
+                            print("Name Error:", e)
+                        try:
+                    
+                            producer.send(ANALYSIS_TOPIC,format_event(event))
+                            producer.flush()
+                        
+                            print(f"[KAFKA] Sent analysis for {uuid_part}")
+                        except Exception as e:
+                            print("KAFKA error:", e)
                     signal.alarm(0)
 
                 except DistributionTimeout:

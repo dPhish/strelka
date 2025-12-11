@@ -106,10 +106,23 @@ RUN apt-get -q update && \
     cd yara-python-$YARA_VERSION/ && \
     python3 setup.py build --dynamic-linking && \
     python3 setup.py install
+# Install Google Chrome for httpx screenshots
+RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-linux.gpg && \
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
+    apt-get update -qq && \
+    apt-get install -qq -y --no-install-recommends google-chrome-stable
 
+ENV ROD_BROWSER_PATH=/usr/bin/google-chrome
+ENV CHROME_PATH=/usr/bin/google-chrome
 #Copy Suricata config to default location
 COPY configs/python/backend/suricata/suricata.yaml /etc/suricata/suricata.yaml
-
+# Install httpx CLI for HttpxScanner
+RUN cd /tmp/ && \
+    wget -q https://github.com/projectdiscovery/httpx/releases/download/v1.6.9/httpx_1.6.9_linux_amd64.zip && \
+    unzip httpx_1.6.9_linux_amd64.zip httpx && \
+    mv httpx /usr/local/bin/httpx_tmp && \
+    chmod +x /usr/local/bin/httpx_tmp && \
+    rm httpx_1.6.9_linux_amd64.zip
 # Install JTR
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
@@ -172,7 +185,7 @@ RUN poetry config virtualenvs.create false && \
 # Copy Strelka files
 COPY ./src/python/ /strelka/
 COPY ./configs/python/backend/ /etc/strelka/
-
+RUN pip install kafka-python
 # Install Strelka
 RUN cd /strelka/ && \
     python3 setup.py -q build && \

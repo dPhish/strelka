@@ -496,7 +496,7 @@ func main() {
 		gatekeeper: gatekeeper,
 		responses:  responses,
 	}
-
+	go opts.StartKafkaIngest(conf.Broker.Bootstrap, "raw")
 	strelka.RegisterFrontendServer(s, opts)
 	grpc_health_v1.RegisterHealthServer(s, opts)
 	s.Serve(listen)

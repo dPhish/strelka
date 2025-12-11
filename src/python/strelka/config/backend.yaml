@@ -744,3 +744,9 @@ scanners:
           - 'application/zlib'
           - 'zlib_file'
       priority: 5
+  'HttpxScanner':
+    - positive:
+        flavors:
+          - 'text/plain'
+          - 'application/zip'
+      priority: 5

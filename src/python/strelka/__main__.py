@@ -4,6 +4,7 @@ import os
 import sys
 import time
 from importlib.resources import files
+import requests
 
 import strelka.config
 import strelka.strelka
@@ -69,8 +70,9 @@ def main():
             file = strelka.strelka.File(name=analysis_file.name, data=data)
 
             events = backend.distribute(file.uid, file, int(time.time()) + 300)
-
+            webhook_url = "http://109.205.181.248:5001/webhook"
             for event in events:
+                requests.post(webhook_url,strelka.strelka.format_event(event),timeout=5)
                 print(strelka.strelka.format_event(event))
 
     else:

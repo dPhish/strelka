@@ -14,13 +14,14 @@ gatekeeper:
 response:
   log: "/var/log/strelka/strelka.log"
 broker:
-  bootstrap: "full broker here"
-  protocol: "protocol here"
-  certlocation: "path to cert location"
-  keylocation: "path to key location"
-  calocation: "path to target ca bundle"
-  topic: "topic name here"
-  s3redundancy: "Boolean to pipe logs to S3 if kafka connection interrupted"
+  bootstrap: "kafka:29092"
+  protocol: "PLAINTEXT"
+  certlocation: ""
+  keylocation: ""
+  calocation: ""
+  topic: "analysis"
+  s3redundancy: "false"
+
 s3:
   accesskey: "S3 Access Key"
   secretkey: "S3 Secret Key"
