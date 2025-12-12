@@ -553,10 +553,10 @@ class Backend(object):
                     # Collect events for local-only
                     events.append(event)
                     producer = KafkaProducer(
-                    bootstrap_servers="kafka:29092",   # جوّه الدوكر
-                    value_serializer=lambda v: json.dumps(v).encode()
+                    bootstrap_servers="kafka:29092",
+                    value_serializer=lambda x: json.dumps(x).encode('utf-8')
                 )
-                    ANALYSIS_TOPIC = "analysis"
+                    ANALYSIS_TOPIC = "email.files.analysis"
                     # Send event back to Redis coordinator
                     if pipeline:
                         pipeline.rpush(f"event:{root_id}", format_event(event))
@@ -572,12 +572,12 @@ class Backend(object):
                                 uuid_part, filename_part = name.split("___", 1)
                             else:
                                 uuid_part = "unknown"
-                            event["email.uuid"] = uuid_part
+                            event["mid"] = uuid_part
                         except Exception as e:
                             print("Name Error:", e)
                         try:
-                    
-                            producer.send(ANALYSIS_TOPIC,format_event(event))
+                            logging.exception(f"file {type(format_event(event))} {format_event(event)} timed out")
+                            producer.send(ANALYSIS_TOPIC,value=format_event(event))
                             producer.flush()
                         
                             print(f"[KAFKA] Sent analysis for {uuid_part}")

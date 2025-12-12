@@ -1,63 +1,5 @@
 version: '3.7'
-
-networks:
-  net:
-
-volumes:
-  logs:
-
 services:
-
-  # ============================
-  # Kafka + Zookeeper
-  # ============================
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
-    restart: unless-stopped
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-    networks:
-      - net
-
-  kafka:
-    image: confluentinc/cp-kafka:7.5.0
-    restart: unless-stopped
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_LISTENERS: INTERNAL://:29092,EXTERNAL://:9092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-
-      KAFKA_BROKER_ID: 1
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-    ports:
-      - "9092:9092"
-    networks:
-      - net
-
-
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    environment:
-      KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-    depends_on:
-      - kafka
-    networks:
-      - net
-
-
-  # ============================
-  # Frontend (Kafka-enabled)
-  # ============================
   frontend:
     build:
       context: ..
@@ -70,15 +12,13 @@ services:
     ports:
       - 57314:57314
     networks:
-      - net
+      - discover_net
     volumes:
       - ../configs/go/frontend/:/etc/strelka/:ro
       - logs:/var/log/strelka/
     restart: unless-stopped
     depends_on:
       - coordinator
-      - gatekeeper
-      - kafka
 
 
   # ============================
@@ -91,7 +31,7 @@ services:
     command: strelka-backend
     shm_size: 512mb
     networks:
-      - net
+      - discover_net
     volumes:
       - ../configs/python/backend/:/etc/strelka/:ro
     restart: unless-stopped
@@ -109,7 +49,7 @@ services:
     command: strelka-manager
     restart: unless-stopped
     networks:
-      - net
+      - discover_net
     volumes:
       - ../configs/go/manager/:/etc/strelka/:ro
     depends_on:
@@ -124,7 +64,7 @@ services:
     command: redis-server --save "" --appendonly no
     restart: unless-stopped
     networks:
-      - net
+      - discover_net
 
 
   # ============================
@@ -135,7 +75,7 @@ services:
     command: redis-server --save "" --appendonly no --maxmemory-policy allkeys-lru
     restart: unless-stopped
     networks:
-      - net
+      - discover_net
 
 
   # ============================
@@ -147,7 +87,7 @@ services:
     environment:
       - COLLECTOR_OTLP_ENABLED=true
     networks:
-      - net
+      - discover_net
     ports:
       - "16686:16686"
       - "6831:6831/udp"
@@ -169,7 +109,7 @@ services:
       - DATABASE_USERNAME=postgres
       - STRELKA_HOST=frontend
     networks:
-      - net
+      - discover_net
     ports:
       - "9980:8080"
     depends_on:
@@ -183,6 +123,14 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USERNAME=postgres
     networks:
-      - net
+      - discover_net
     ports:
       - "5432:5432"
+
+networks:
+  discover_net:
+    external: true
+    name: discover_engine_pipeline_net  # REPLACE with actual network name from 'docker network ls'
+
+volumes:
+  logs:
