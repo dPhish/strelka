@@ -571,12 +571,15 @@ class Backend(object):
                     # Collect events for local-only
                     events.append(event)
 <<<<<<< HEAD
+<<<<<<< HEAD
                     producer = KafkaProducer(
                     bootstrap_servers="kafka:29092",   # جوّه الدوكر
                     value_serializer=lambda v: json.dumps(v).encode()
                 )
                     ANALYSIS_TOPIC = "analysis"
 =======
+=======
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
                     file_name = file.name or ""
                     if "___urls___" in file_name:
                         logging.info(
@@ -602,6 +605,7 @@ class Backend(object):
                         pipeline.expireat(f"event:{root_id}", expire_at)
                         pipeline.execute()
 <<<<<<< HEAD
+<<<<<<< HEAD
                         try:
                             if isinstance(event, bytes):
                                 event = json.loads(event.decode("utf-8"))
@@ -623,6 +627,8 @@ class Backend(object):
                             print(f"[KAFKA] Sent analysis for {uuid_part}")
                         except Exception as e:
                             print("KAFKA error:", e)
+=======
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 =======
 >>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
                     signal.alarm(0)
