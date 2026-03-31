@@ -496,7 +496,11 @@ func main() {
 		gatekeeper: gatekeeper,
 		responses:  responses,
 	}
+<<<<<<< HEAD
 	go opts.StartKafkaIngest(conf.Broker.Bootstrap, "raw")
+=======
+	go opts.StartKafkaIngest(conf.Broker.Bootstrap, "email.files")
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 	strelka.RegisterFrontendServer(s, opts)
 	grpc_health_v1.RegisterHealthServer(s, opts)
 	s.Serve(listen)

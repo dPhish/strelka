@@ -10,6 +10,10 @@ import (
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/go-redis/redis/v8"
+<<<<<<< HEAD
+=======
+	"github.com/google/uuid"
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 
 	"github.com/target/strelka/src/go/api/strelka"
 )
@@ -19,6 +23,7 @@ import (
 // ==============================
 
 type RawKafkaMessage struct {
+<<<<<<< HEAD
 	Id        string            `json:"id"`
 	Filename  string            `json:"filename"`
 	DataB64   string            `json:"data_base64"`
@@ -26,6 +31,15 @@ type RawKafkaMessage struct {
 	Source    string            `json:"source"`
 	Time      int64             `json:"time"`
 	Meta      map[string]string `json:"meta"`
+=======
+	Id       string            `json:"id"`
+	Filename string            `json:"filename"`
+	DataB64  string            `json:"data_base64"`
+	Client   string            `json:"client"`
+	Source   string            `json:"source"`
+	Time     int64             `json:"time"`
+	Meta     map[string]string `json:"meta"`
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 }
 
 // ==============================
@@ -34,11 +48,20 @@ type RawKafkaMessage struct {
 
 func (s *server) StartKafkaIngest(bootstrap, topic string) {
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
+<<<<<<< HEAD
 		"bootstrap.servers": bootstrap,
 		"group.id":          "strelka-kafka-ingest",
 		"auto.offset.reset": "earliest",
 	})
 
+=======
+		"bootstrap.servers":         bootstrap,
+		"group.id":                  "strelka-kafka-ingest",
+		"auto.offset.reset":         "earliest",
+		"max.partition.fetch.bytes": 104857600,
+		"fetch.message.max.bytes":   104857600,
+	})
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 	if err != nil {
 		log.Fatalf("Kafka consumer init error: %v", err)
 	}
@@ -73,6 +96,7 @@ func (s *server) StartKafkaIngest(bootstrap, topic string) {
 func (s *server) processRawMessage(raw RawKafkaMessage) {
 	ctx := context.Background()
 
+<<<<<<< HEAD
 	// Decode base64 file
 	data, err := base64.StdEncoding.DecodeString(raw.DataB64)
 	if err != nil {
@@ -82,6 +106,20 @@ func (s *server) processRawMessage(raw RawKafkaMessage) {
 
 	keyd := fmt.Sprintf("data:%v", raw.Id)
 	keye := fmt.Sprintf("event:%v", raw.Id)
+=======
+	// Unique task ID per Kafka message, even if raw.Id repeats
+	taskID := uuid.NewString()
+
+	// Decode base64 file
+	data, err := base64.StdEncoding.DecodeString(raw.DataB64)
+	if err != nil {
+		log.Printf("Bad base64 for raw id=%s task id=%s: %v", raw.Id, taskID, err)
+		return
+	}
+
+	keyd := fmt.Sprintf("data:%s", taskID)
+	keye := fmt.Sprintf("event:%s", taskID)
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 
 	// Deadline — like ScanFile
 	deadline := time.Now().Add(2 * time.Minute)
@@ -90,6 +128,7 @@ func (s *server) processRawMessage(raw RawKafkaMessage) {
 	p := s.coordinator.cli.Pipeline()
 	p.RPush(ctx, keyd, data)
 	p.ExpireAt(ctx, keyd, deadline)
+<<<<<<< HEAD
 	if _, err := p.Exec(ctx); err != nil {
 		log.Printf("Redis write error: %v", err)
 		return
@@ -99,17 +138,48 @@ func (s *server) processRawMessage(raw RawKafkaMessage) {
 
 	// Build request metadata
 	reqObj := map[string]interface{}{
+=======
+	p.ExpireAt(ctx, keye, deadline)
+	if _, err := p.Exec(ctx); err != nil {
+		log.Printf("Redis write error for raw id=%s task id=%s: %v", raw.Id, taskID, err)
+		return
+	}
+
+	log.Printf("📥 Stored file raw id=%s as task id=%s in Redis key %s", raw.Id, taskID, keyd)
+
+	// Build request metadata
+	reqObj := map[string]interface{}{
+		"task_id": taskID,
+		"id":      taskID, // important: Strelka workers usually use "id" to resolve data:<id> and event:<id>
+		"raw_id":  raw.Id, // keep original external/message id for reference
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 		"attributes": map[string]interface{}{
 			"filename": raw.Filename,
 		},
 		"client": raw.Client,
+<<<<<<< HEAD
 		"id":     raw.Id,
+=======
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 		"source": raw.Source,
 		"time":   raw.Time,
 	}
 
+<<<<<<< HEAD
 	// Add to Redis sorted task list
 	reqJSON, _ := json.Marshal(reqObj)
+=======
+	if len(raw.Meta) > 0 {
+		reqObj["meta"] = raw.Meta
+	}
+
+	// Add to Redis sorted task list
+	reqJSON, err := json.Marshal(reqObj)
+	if err != nil {
+		log.Printf("Failed to marshal task raw id=%s task id=%s: %v", raw.Id, taskID, err)
+		return
+	}
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 
 	err = s.coordinator.cli.ZAdd(
 		ctx,
@@ -119,6 +189,7 @@ func (s *server) processRawMessage(raw RawKafkaMessage) {
 			Member: reqJSON,
 		},
 	).Err()
+<<<<<<< HEAD
 
 	if err != nil {
 		log.Printf("Failed to add task %s → Redis: %v", raw.Id, err)
@@ -129,13 +200,28 @@ func (s *server) processRawMessage(raw RawKafkaMessage) {
 
 	// Now wait for scanning result
 	go s.waitForResult(raw.Id, keye, reqObj)
+=======
+	if err != nil {
+		log.Printf("Failed to add task raw id=%s task id=%s to Redis: %v", raw.Id, taskID, err)
+		return
+	}
+
+	log.Printf("📝 Added task raw id=%s task id=%s to Redis sorted set 'tasks'", raw.Id, taskID)
+
+	// Now wait for scanning result
+	go s.waitForResult(taskID, keye, reqObj)
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 }
 
 // ==============================
 //  Wait for result (same as ScanFile logic)
 // ==============================
 
+<<<<<<< HEAD
 func (s *server) waitForResult(id, keye string, em map[string]interface{}) {
+=======
+func (s *server) waitForResult(taskID, keye string, em map[string]interface{}) {
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 	ctx := context.Background()
 
 	for {
@@ -150,11 +236,16 @@ func (s *server) waitForResult(id, keye string, em map[string]interface{}) {
 		}
 
 		if lpop == "FIN" {
+<<<<<<< HEAD
 			log.Printf("✔️  FIN received for %s", id)
+=======
+			log.Printf("✔️ FIN received for task id=%s", taskID)
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 			break
 		}
 
 		// Merge event into metadata
+<<<<<<< HEAD
 		json.Unmarshal([]byte(lpop), &em)
 
 		// prepare final JSON
@@ -162,12 +253,34 @@ func (s *server) waitForResult(id, keye string, em map[string]interface{}) {
 
 		resp := &strelka.ScanResponse{
 			Id:    id,
+=======
+		if err := json.Unmarshal([]byte(lpop), &em); err != nil {
+			log.Printf("Failed to unmarshal event for task id=%s: %v", taskID, err)
+			continue
+		}
+
+		// prepare final JSON
+		event, err := json.Marshal(em)
+		if err != nil {
+			log.Printf("Failed to marshal final event for task id=%s: %v", taskID, err)
+			continue
+		}
+
+		resp := &strelka.ScanResponse{
+			Id:    taskID,
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
 			Event: string(event),
 		}
 
 		// Push to frontend responses channel (Kafka logger will pick it)
 		s.responses <- resp
 
+<<<<<<< HEAD
 		log.Printf("📤 Delivered analysis for %s", id)
 	}
 }
+=======
+		log.Printf("📤 Delivered analysis for task id=%s", taskID)
+	}
+}
+>>>>>>> deaa4d6b97943f7c0e6fd31bf8e9e3c09d400c9a
