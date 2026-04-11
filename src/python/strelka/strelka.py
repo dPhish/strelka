@@ -1170,7 +1170,6 @@ class Scanner(object):
 
             return self.files, {self.key: self.event}, self.iocs
 
-    def process_url_iocs(self, backend_cfg: dict) -> None:
     def process_url_iocs(self, backend_cfg: dict = None, file_name: str = "") -> None:
         """Process URL-type IOCs and route them for independent analysis.
         
