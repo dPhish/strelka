@@ -79,8 +79,8 @@ RUN apt-get -q update && \
     rm -rf /opt/zeek/lib/*.a && \
 # Download and compile exiftool
     cd /tmp/ && \
-    curl -OL https://github.com/exiftool/exiftool/archive/refs/tags/$EXIFTOOL_VERSION.tar.gz && \
-    tar -zxvf $EXIFTOOL_VERSION.tar.gz && \
+    curl -OL https://github.com/exiftool/exiftool/archive/refs/tags/v$EXIFTOOL_VERSION.tar.gz && \
+    tar -zxvf v$EXIFTOOL_VERSION.tar.gz && \
     cd exiftool-$EXIFTOOL_VERSION/ && \
     perl Makefile.PL && \
     make -s && \
