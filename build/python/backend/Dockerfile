@@ -79,29 +79,33 @@ RUN apt-get -q update && \
     rm -rf /opt/zeek/lib/*.a && \
 # Download and compile exiftool
     cd /tmp/ && \
-    curl -OL https://github.com/exiftool/exiftool/archive/refs/tags/v$EXIFTOOL_VERSION.tar.gz && \
-    tar -zxvf v$EXIFTOOL_VERSION.tar.gz && \
+    curl -fL -o exiftool-v$EXIFTOOL_VERSION.tar.gz https://github.com/exiftool/exiftool/archive/refs/tags/v$EXIFTOOL_VERSION.tar.gz && \
+    tar -zxvf exiftool-v$EXIFTOOL_VERSION.tar.gz && \
+    rm -f exiftool-v$EXIFTOOL_VERSION.tar.gz && \
     cd exiftool-$EXIFTOOL_VERSION/ && \
     perl Makefile.PL && \
     make -s && \
     make -s install && \
 # Download and move binary for 7z 24.09
     cd /tmp/ && \
-    curl -OL https://7-zip.org/a/7z2409-linux-x64.tar.xz &&\
-    tar -xf 7z2409-linux-x64.tar.xz &&\
+    curl -fL -o 7z2409-linux-x64.tar.xz https://7-zip.org/a/7z2409-linux-x64.tar.xz && \
+    tar -xf 7z2409-linux-x64.tar.xz && \
     cp 7zz /usr/local/bin && \
+    rm -f 7z2409-linux-x64.tar.xz && \
 # Install YARA
     cd /tmp/ && \
-    curl -OL https://github.com/VirusTotal/yara/archive/v$YARA_VERSION.tar.gz && \
-    tar -zxvf v$YARA_VERSION.tar.gz && \
+    curl -fL -o yara-v$YARA_VERSION.tar.gz https://github.com/VirusTotal/yara/archive/v$YARA_VERSION.tar.gz && \
+    tar -zxvf yara-v$YARA_VERSION.tar.gz && \
+    rm -f yara-v$YARA_VERSION.tar.gz && \
     cd yara-$YARA_VERSION/ && \
     ./bootstrap.sh && \
     ./configure --with-crypto --enable-magic --enable-cuckoo && \
     make -s && make -s install && make -s check && \
 # Install yara-python
     cd /tmp/ && \
-    curl -OL https://github.com/VirusTotal/yara-python/archive/v$YARA_VERSION.tar.gz && \
-    tar -zxvf v$YARA_VERSION.tar.gz && \
+    curl -fL -o yara-python-v$YARA_VERSION.tar.gz https://github.com/VirusTotal/yara-python/archive/v$YARA_VERSION.tar.gz && \
+    tar -zxvf yara-python-v$YARA_VERSION.tar.gz && \
+    rm -f yara-python-v$YARA_VERSION.tar.gz && \
     cd yara-python-$YARA_VERSION/ && \
     python3 setup.py build --dynamic-linking && \
     python3 setup.py install
