@@ -133,6 +133,33 @@ def normalize_external_path(raw_path: str, base_dir: Optional[Path] = None) -> O
     return None
 
 
+def validate_url(url: str) -> bool:
+    """
+    Validates if a string is a valid URL (http/https/ftp).
+    Returns True only for valid URLs, False for plain strings or non-URLs.
+    """
+    if not url or not isinstance(url, str):
+        return False
+    
+    url = url.strip()
+    
+    # Must start with valid scheme
+    valid_schemes = ("http://", "https://", "ftp://", "ftps://")
+    if not any(url.lower().startswith(scheme) for scheme in valid_schemes):
+        return False
+    
+    try:
+        parsed = urlparse(url)
+        # Must have netloc (domain/host)
+        if not parsed.netloc:
+            return False
+        if len(parsed.netloc.strip()) < 3:
+            return False
+        return True
+    except Exception:
+        return False
+
+
 def infer_content_type(record: Dict[str, Any]) -> str:
     """
     يستنتج الـ Content-Type من record:
@@ -433,28 +460,52 @@ class HttpxScanner(strelka.Scanner):
         if sha256_shot:
             self.iocs.append({"type": "hash", "subtype": "sha256", "value": sha256_shot})
 
-    def _extract_url_from_text_file(self, data: bytes) -> Optional[str]:
+    def _extract_url_from_text_file(self, data: bytes, source_type: str = "external") -> Optional[str]:
         """
-        يفك محتوى txt ويجيب أول سطر مش فاضي ويعتبره URL.
+        Extracts URLs from text file content.
+        
+        Args:
+            data: Raw bytes from file
+            source_type: "external" (from Kafka text file) or "ioc_internal" (extracted IOC)
+                - external: Accept any text lines (backward compatible)
+                - ioc_internal: Only accept valid URLs
         """
         try:
             text = data.decode("utf-8", errors="ignore")
         except Exception:
             return None
-        test = []
+        
+        lines = []
         for line in text.splitlines():
-            test.append(line.strip())
-        if len(test) > 0:
-            return test 
-        return None
+            stripped = line.strip()
+            if not stripped:
+                continue
+            
+            # For internal IOCs: ONLY accept valid URLs
+            if source_type == "ioc_internal":
+                if validate_url(stripped):
+                    lines.append(stripped)
+                else:
+                    self.flags.append(f"ioc_rejected_not_url: {stripped[:50]}")
+                    continue
+            else:
+                # external source: accept all (backward compatible)
+                lines.append(stripped)
+        
+        return lines if lines else None
 
-    def scan(self, data, file, options, expire_at):
+    def scan(self, data, file, options, expire_at, source_type: str = "external"):
         """
         دي الدالة اللي Strelka بيناديها:
-        - data: محتوى الفايل (txt فيه URL)
+        - data: محتوى الفايل (txt فيه URL او IOC من فايل تاني)
         - file: كائن File بتاع Strelka (metadata)
         - options: من ال backend config (httpx_cmd, run_base_dir, s3_bucket...)
         - expire_at: وقت انتهاء الـ job
+        - source_type: "external" (من Kafka/text file) أو "ioc_internal" (IOC مستخرج من اسكانر تاني)
+        
+        Behavior:
+        - external: Accepts any text and tries to extract URLs (backward compatible)
+        - ioc_internal: ONLY accepts valid URLs (strict validation for internal IOCs)
         """
         # ✅ لازم httpx يبقى list (مش dict) طالما انت بتعمل append results
         if not isinstance(self.event.get("httpx"), list):
@@ -464,8 +515,12 @@ class HttpxScanner(strelka.Scanner):
         run_base_dir = options.get("run_base_dir", "/tmp/httpx_tmp")
 
         # نطلّع الـ URLs من محتوى الـ txt
-        urls = self._extract_url_from_text_file(data) or []
+        urls = self._extract_url_from_text_file(data, source_type=source_type) or []
         print(len(urls))
+        
+        # Track parent file for IOC analysis chain
+        parent_file_id = getattr(file, "uid", None) or getattr(file, "pointer", None)
+        parent_file_name = getattr(file, "name", None)
 
         # ✅ جهّز uuid_part مرة واحدة عشان يبقى متاح للـ BODY والـ SCREENSHOT
         file_name = getattr(file, "name", "") or ""
@@ -483,7 +538,11 @@ class HttpxScanner(strelka.Scanner):
         )
 
         for url in urls:
-            transformed = {}
+            transformed = {
+                "source_type": source_type,
+                "parent_file_id": parent_file_id,
+                "parent_file_name": parent_file_name,
+            }
             run_dir = None
 
             try:

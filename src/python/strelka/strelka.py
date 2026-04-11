@@ -1153,6 +1153,76 @@ class Scanner(object):
 
             return self.files, {self.key: self.event}, self.iocs
 
+    def process_url_iocs(self, backend_cfg: dict) -> None:
+        """Process URL-type IOCs and route them to httpx_scanner for analysis.
+        
+        This method:
+        1. Filters IOCs for ioc_type="url" (auto-set by process_ioc)
+        2. Creates intermediate File objects for each URL
+        3. Calls httpx_scanner with source_type="ioc_internal"
+        4. Links results back to parent file via uid
+        
+        Args:
+            backend_cfg: Backend configuration for httpx_scanner options
+        """
+        try:
+            # Import here to avoid circular imports
+            from .scanners import httpx_scanner
+            
+            url_iocs = [ioc for ioc in self.iocs if ioc.get("ioc_type") == "url"]
+            
+            if not url_iocs:
+                return
+            
+            # Create httpx scanner instance
+            httpx_instance = httpx_scanner.HttpxScanner(backend_cfg)
+            
+            for ioc in url_iocs:
+                url_value = ioc.get("ioc", "")
+                if not url_value:
+                    continue
+                
+                try:
+                    # Create a temporary File for this URL IOC
+                    url_file = File(
+                        name=f"{self.name}_extracted_url",
+                        source=self.name,
+                    )
+                    
+                    # Build text file format (one URL per line)
+                    url_text = url_value.encode('utf-8')
+                    
+                    # Call httpx_scanner with internal IOC source type
+                    httpx_instance.scan_wrapper(
+                        data=url_text,
+                        file=url_file,
+                        options=backend_cfg.get("scanners", {}).get("httpx_scanner", {}),
+                        expire_at=self.expire_at,
+                    )
+                    
+                    # Store extracted files from httpx
+                    if hasattr(httpx_instance, 'files'):
+                        self.files.extend(httpx_instance.files)
+                    
+                    # Store httpx analysis in event
+                    if "httpx_analysis" not in self.event:
+                        self.event["httpx_analysis"] = []
+                    
+                    if hasattr(httpx_instance, 'event') and httpx_instance.event:
+                        self.event["httpx_analysis"].append({
+                            "url": url_value,
+                            "analysis": httpx_instance.event,
+                            "source": self.name
+                        })
+                    
+                except Exception as e:
+                    logging.error(f"Failed to process URL IOC {url_value}: {e}")
+                    self.flags.append(f"url_ioc_processing_failed: {url_value}")
+
+        except Exception as e:
+            logging.error(f"Error in process_url_iocs: {e}")
+            self.flags.append("url_ioc_processing_error")
+
     def emit_file(
         self, data: bytes, name: str = "", flavors: Optional[list[str]] = None
     ) -> None:
