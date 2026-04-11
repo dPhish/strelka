@@ -90,7 +90,7 @@ RUN apt-get -q update && \
     apt-get install -q -y --no-install-recommends p7zip-full && \
 # Install YARA
     cd /tmp/ && \
-    curl -fL -o yara-v$YARA_VERSION.tar.gz https://github.com/VirusTotal/yara/archive/v$YARA_VERSION.tar.gz && \
+    curl -fL -o yara-v$YARA_VERSION.tar.gz https://github.com/VirusTotal/yara/archive/refs/tags/v$YARA_VERSION.tar.gz && \
     tar -zxvf yara-v$YARA_VERSION.tar.gz && \
     rm -f yara-v$YARA_VERSION.tar.gz && \
     cd yara-$YARA_VERSION/ && \
@@ -99,7 +99,7 @@ RUN apt-get -q update && \
     make -s && make -s install && make -s check && \
 # Install yara-python
     cd /tmp/ && \
-    curl -fL -o yara-python-v$YARA_VERSION.tar.gz https://github.com/VirusTotal/yara-python/archive/v$YARA_VERSION.tar.gz && \
+    curl -fL -o yara-python-v$YARA_VERSION.tar.gz https://github.com/VirusTotal/yara-python/archive/refs/tags/v$YARA_VERSION.tar.gz && \
     tar -zxvf yara-python-v$YARA_VERSION.tar.gz && \
     rm -f yara-python-v$YARA_VERSION.tar.gz && \
     cd yara-python-$YARA_VERSION/ && \
