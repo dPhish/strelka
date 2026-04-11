@@ -926,6 +926,10 @@ class Backend(object):
         Returns:
             Dictionary containing the assigned scanner or None.
         """
+        # Restrict HTTPX scanner to run only on extracted URL files, preventing infinite loops on CSS/JS downloads
+        if "httpx" in scanner.lower() and "url_file" not in file.flavors.get("external", []):
+            return {}
+
         for mapping in mappings:
             negatives = mapping.get("negative", {})
             positives = mapping.get("positive", {})
@@ -1131,6 +1135,17 @@ class Scanner(object):
                     {"exception": "\n".join(traceback.format_exception(e, limit=-10))}
                 )
 
+            # Clean up HTTPX scanner output to silence 'No JSON lines found' errors and flags
+            if "httpx" in self.name.lower():
+                if "errors" in self.event:
+                    self.event["errors"] = [
+                        e for e in self.event["errors"]
+                        if "No JSON lines found" not in str(e.get("error", ""))
+                    ]
+                    if not self.event["errors"]:
+                        del self.event["errors"]
+                self.flags = [f for f in self.flags if f != "httpx_error"]
+
             self.event = {
                 **{"elapsed": round(time.time() - start, 6)},
                 **{"flags": self.flags},
@@ -1151,9 +1166,12 @@ class Scanner(object):
 
             self.iocs = unique_iocs
 
+            self.process_url_iocs(backend_cfg=None, file_name=file.name if file else "")
+
             return self.files, {self.key: self.event}, self.iocs
 
     def process_url_iocs(self, backend_cfg: dict) -> None:
+    def process_url_iocs(self, backend_cfg: dict = None, file_name: str = "") -> None:
         """Process URL-type IOCs and route them for independent analysis.
         
         This method:
@@ -1163,8 +1181,12 @@ class Scanner(object):
         
         Args:
             backend_cfg: Backend configuration (kept for backwards compatibility)
+            file_name: Originating file name to prevent infinite loop.
         """
         try:
+            if file_name and "___urls___" in file_name:
+                return
+
             url_iocs = [ioc for ioc in self.iocs if ioc.get("ioc_type") == "url"]
             
             if not url_iocs:
