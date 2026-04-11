@@ -86,12 +86,8 @@ RUN apt-get -q update && \
     perl Makefile.PL && \
     make -s && \
     make -s install && \
-# Download and move binary for 7z 24.09
-    cd /tmp/ && \
-    curl -fL -o 7z2409-linux-x64.tar.xz https://7-zip.org/a/7z2409-linux-x64.tar.xz && \
-    tar -xf 7z2409-linux-x64.tar.xz && \
-    cp 7zz /usr/local/bin && \
-    rm -f 7z2409-linux-x64.tar.xz && \
+# Install 7z
+    apt-get install -q -y --no-install-recommends p7zip-full && \
 # Install YARA
     cd /tmp/ && \
     curl -fL -o yara-v$YARA_VERSION.tar.gz https://github.com/VirusTotal/yara/archive/v$YARA_VERSION.tar.gz && \
