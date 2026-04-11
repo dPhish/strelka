@@ -10,9 +10,9 @@ ARG YARA_VERSION=4.3.1
 ARG EXIFTOOL_VERSION=12.60
 
 # Environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONFAULTHANDLER 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONFAULTHANDLER=1
+ENV PYTHONUNBUFFERED=1
 
 # User configuration
 ARG USERNAME=strelka
@@ -21,7 +21,8 @@ ARG USER_GID=$USER_UID
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID --create-home --shell /bin/bash $USERNAME
 
-RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+RUN rm -f /etc/apt/apt.conf.d/docker-clean \
+    && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 
 # Install build packages
 RUN apt-get -q update && \
@@ -72,39 +73,42 @@ RUN apt-get -q update && \
     unrar \
     unzip \
     upx \
-    jq && \
-#clean up zeek install
+    jq \
+    p7zip-full && \
+# clean up zeek install
     cp /opt/zeek/bin/zeek /bin/zeek && \
     rm -rf /opt/zeek/share/btest /opt/zeek/bin && \
     rm -rf /opt/zeek/lib/*.a && \
 # Download and compile exiftool
     cd /tmp/ && \
-    curl -fL -o exiftool-v$EXIFTOOL_VERSION.tar.gz https://github.com/exiftool/exiftool/archive/refs/tags/v$EXIFTOOL_VERSION.tar.gz && \
-    tar -zxvf exiftool-v$EXIFTOOL_VERSION.tar.gz && \
-    rm -f exiftool-v$EXIFTOOL_VERSION.tar.gz && \
-    cd exiftool-$EXIFTOOL_VERSION/ && \
+    curl -fsSL -o exiftool.tar.gz https://codeload.github.com/exiftool/exiftool/tar.gz/refs/tags/${EXIFTOOL_VERSION} && \
+    tar -xzf exiftool.tar.gz && \
+    rm -f exiftool.tar.gz && \
+    cd exiftool-${EXIFTOOL_VERSION}/ && \
     perl Makefile.PL && \
     make -s && \
     make -s install && \
-# Install 7z
-    apt-get install -q -y --no-install-recommends p7zip-full && \
 # Install YARA
     cd /tmp/ && \
-    curl -fL -o yara-v$YARA_VERSION.tar.gz https://github.com/VirusTotal/yara/archive/refs/tags/v$YARA_VERSION.tar.gz && \
-    tar -zxvf yara-v$YARA_VERSION.tar.gz && \
-    rm -f yara-v$YARA_VERSION.tar.gz && \
-    cd yara-$YARA_VERSION/ && \
+    curl -fsSL -o yara.tar.gz https://codeload.github.com/VirusTotal/yara/tar.gz/refs/tags/v${YARA_VERSION} && \
+    tar -xzf yara.tar.gz && \
+    rm -f yara.tar.gz && \
+    cd yara-${YARA_VERSION}/ && \
     ./bootstrap.sh && \
     ./configure --with-crypto --enable-magic --enable-cuckoo && \
-    make -s && make -s install && make -s check && \
+    make -s && \
+    make -s install && \
+    ldconfig && \
+    make -s check && \
 # Install yara-python
     cd /tmp/ && \
-    curl -fL -o yara-python-v$YARA_VERSION.tar.gz https://github.com/VirusTotal/yara-python/archive/refs/tags/v$YARA_VERSION.tar.gz && \
-    tar -zxvf yara-python-v$YARA_VERSION.tar.gz && \
-    rm -f yara-python-v$YARA_VERSION.tar.gz && \
-    cd yara-python-$YARA_VERSION/ && \
+    curl -fsSL -o yara-python.tar.gz https://codeload.github.com/VirusTotal/yara-python/tar.gz/refs/tags/v${YARA_VERSION} && \
+    tar -xzf yara-python.tar.gz && \
+    rm -f yara-python.tar.gz && \
+    cd yara-python-${YARA_VERSION}/ && \
     python3 setup.py build --dynamic-linking && \
     python3 setup.py install
+
 # Install Google Chrome for httpx screenshots
 RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-linux.gpg && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
@@ -113,15 +117,18 @@ RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor
 
 ENV ROD_BROWSER_PATH=/usr/bin/google-chrome
 ENV CHROME_PATH=/usr/bin/google-chrome
-#Copy Suricata config to default location
+
+# Copy Suricata config to default location
 COPY configs/python/backend/suricata/suricata.yaml /etc/suricata/suricata.yaml
+
 # Install httpx CLI for HttpxScanner
 RUN cd /tmp/ && \
-    wget -q https://github.com/projectdiscovery/httpx/releases/download/v1.6.9/httpx_1.6.9_linux_amd64.zip && \
-    unzip httpx_1.6.9_linux_amd64.zip httpx && \
+    curl -fsSL -o httpx.zip https://github.com/projectdiscovery/httpx/releases/download/v1.6.9/httpx_1.6.9_linux_amd64.zip && \
+    unzip httpx.zip httpx && \
     mv httpx /usr/local/bin/httpx_tmp && \
     chmod +x /usr/local/bin/httpx_tmp && \
-    rm httpx_1.6.9_linux_amd64.zip
+    rm -f httpx.zip
+
 # Install JTR
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
@@ -136,6 +143,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     libbz2-dev \
     libgomp1 && \
     cpan -i Compress::Raw::Lzma
+
 # The maintainer isn't big on releases or tags so grab an arbitrary, but consistent, commit.
 # Additionally jump through some extra hoops to get the single commit to save some download time.
 RUN mkdir jtr && cd jtr && git init && git remote add origin https://github.com/openwall/john.git && \
@@ -157,9 +165,9 @@ RUN apt-get update -qq && \
     clamav \
     clamav-base \
     clamav-daemon \
-    clamav-freshclam 
+    clamav-freshclam
 
-# Update permissions for relevant fresclam log files
+# Update permissions for relevant freshclam log files
 RUN touch /var/log/clamav/freshclam.log
 RUN chmod 777 /var/log/clamav/freshclam.log
 RUN chown clamav /var/log/clamav/freshclam.log
@@ -169,26 +177,30 @@ RUN python3 -m pip install -U pip setuptools==75.8.1 && \
     pip install poetry==2.2.1 && \
     python3 -m pip install --upgrade wheel && \
     rm -rf /root/.cache/pip
-RUN pip install six pyasn1==0.4.8 && pip install --no-build-isolation ssdeep
+
+RUN pip install six pyasn1==0.4.8 && \
+    pip install --no-build-isolation ssdeep
 
 # Set the working directory and copy the project files
 WORKDIR /strelka/
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-
 COPY pyproject.toml poetry.lock ./
 RUN poetry lock
+
 # Use Poetry to install the project dependencies globally
 # This step is after the COPY step because it is more likely to change,
 # and therefore should not be included in earlier layers that can be cached.
 RUN poetry config virtualenvs.create false && \
     poetry install --only main && \
     rm -rf /root/.cache/pypoetry
+
 # Copy Strelka files
 COPY ./src/python/ /strelka/
 COPY ./configs/python/backend/ /etc/strelka/
 RUN pip install kafka-python
+
 # Install Strelka
 RUN cd /strelka/ && \
     python3 setup.py -q build && \
@@ -227,8 +239,8 @@ ARG SCANNER_TEST=""
 # Run tests. Fail build if any tests fail.
 RUN echo '[+] Run build checks' && \
     cd /strelka/strelka/ && \
-    if $SCANNER_TESTS; then python3 -m pytest -p no:cacheprovider -s tests/$SCANNER_TEST; fi && \
-    if $CONFIG_TESTS; then python3 -m pytest -s tests_configuration/; fi && \
+    if [ -n "$SCANNER_TEST" ]; then python3 -m pytest -p no:cacheprovider -s tests/$SCANNER_TEST; fi && \
+    if [ "$CONFIG_TESTS" = "true" ]; then python3 -m pytest -s tests_configuration/; fi && \
     echo '[+] Done'
 
 USER root
