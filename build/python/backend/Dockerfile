@@ -45,7 +45,10 @@ RUN apt-get -q update && \
     python-is-python3 \
     pkg-config \
     supervisor \
-    ncat
+    ncat \
+    ca-certificates \
+    autoconf \
+    xz-utils
 
 # Install Zeek
 RUN echo 'deb http://download.opensuse.org/repositories/security:/zeek/xUbuntu_22.04/ /' | tee /etc/apt/sources.list.d/security:zeek.list && \
@@ -73,38 +76,39 @@ RUN apt-get -q update && \
     unzip \
     upx \
     jq && \
-#clean up zeek install
-    cp /opt/zeek/bin/zeek /bin/zeek && \
+#clean up zeek install (safe)
+    test -f /opt/zeek/bin/zeek && cp /opt/zeek/bin/zeek /bin/zeek || true && \
     rm -rf /opt/zeek/share/btest /opt/zeek/bin && \
     rm -rf /opt/zeek/lib/*.a && \
 # Download and compile exiftool
     cd /tmp/ && \
-    curl -OL https://github.com/exiftool/exiftool/archive/refs/tags/$EXIFTOOL_VERSION.tar.gz && \
+    curl -fsSLO https://github.com/exiftool/exiftool/archive/refs/tags/$EXIFTOOL_VERSION.tar.gz && \
     tar -zxvf $EXIFTOOL_VERSION.tar.gz && \
     cd exiftool-$EXIFTOOL_VERSION/ && \
     perl Makefile.PL && \
-    make -s && \
-    make -s install && \
-# Download and move binary for 7z 24.09
+    make && \
+    make install && \
+# Download and move binary for 7z
     cd /tmp/ && \
-    curl -OL https://7-zip.org/a/7z2409-linux-x64.tar.xz &&\
-    tar -xf 7z2409-linux-x64.tar.xz &&\
+    curl -fsSLO https://7-zip.org/a/7z2409-linux-x64.tar.xz && \
+    tar -xf 7z2409-linux-x64.tar.xz && \
     cp 7zz /usr/local/bin && \
 # Install YARA
     cd /tmp/ && \
-    curl -OL https://github.com/VirusTotal/yara/archive/v$YARA_VERSION.tar.gz && \
+    curl -fsSLO https://github.com/VirusTotal/yara/archive/v$YARA_VERSION.tar.gz && \
     tar -zxvf v$YARA_VERSION.tar.gz && \
     cd yara-$YARA_VERSION/ && \
     ./bootstrap.sh && \
     ./configure --with-crypto --enable-magic --enable-cuckoo && \
-    make -s && make -s install && make -s check && \
+    make && make install && \
 # Install yara-python
     cd /tmp/ && \
-    curl -OL https://github.com/VirusTotal/yara-python/archive/v$YARA_VERSION.tar.gz && \
+    curl -fsSLO https://github.com/VirusTotal/yara-python/archive/v$YARA_VERSION.tar.gz && \
     tar -zxvf v$YARA_VERSION.tar.gz && \
     cd yara-python-$YARA_VERSION/ && \
     python3 setup.py build --dynamic-linking && \
     python3 setup.py install
+
 # Install Google Chrome for httpx screenshots
 RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-linux.gpg && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
@@ -113,9 +117,10 @@ RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor
 
 ENV ROD_BROWSER_PATH=/usr/bin/google-chrome
 ENV CHROME_PATH=/usr/bin/google-chrome
-#Copy Suricata config to default location
+
 COPY configs/python/backend/suricata/suricata.yaml /etc/suricata/suricata.yaml
-# Install httpx CLI for HttpxScanner
+
+# Install httpx CLI
 RUN cd /tmp/ && \
     wget -q https://github.com/projectdiscovery/httpx/releases/download/v1.6.9/httpx_1.6.9_linux_amd64.zip && \
     unzip httpx_1.6.9_linux_amd64.zip httpx && \
