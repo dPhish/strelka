@@ -6,8 +6,9 @@ LABEL maintainer="Target Brands, Inc. TTS-CFC-OpenSource@target.com"
 # User configuration
 ARG CONFIG_TESTS=false
 
-ARG YARA_VERSION=4.3.1
-ARG EXIFTOOL_VERSION=12.60
+# ✅ fixed versions (no 404)
+ARG YARA_VERSION=4.3.2
+ARG EXIFTOOL_VERSION=12.76
 
 # Environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -76,15 +77,15 @@ RUN apt-get -q update && \
     unzip \
     upx \
     jq && \
-#clean up zeek install (safe)
+# clean up zeek install safely
     test -f /opt/zeek/bin/zeek && cp /opt/zeek/bin/zeek /bin/zeek || true && \
     rm -rf /opt/zeek/share/btest /opt/zeek/bin && \
     rm -rf /opt/zeek/lib/*.a && \
 # Download and compile exiftool
     cd /tmp/ && \
-    curl -fsSLO https://github.com/exiftool/exiftool/archive/refs/tags/$EXIFTOOL_VERSION.tar.gz && \
-    tar -zxvf $EXIFTOOL_VERSION.tar.gz && \
-    cd exiftool-$EXIFTOOL_VERSION/ && \
+    curl -fsSLO https://github.com/exiftool/exiftool/archive/refs/tags/${EXIFTOOL_VERSION}.tar.gz && \
+    tar -zxvf ${EXIFTOOL_VERSION}.tar.gz && \
+    cd exiftool-${EXIFTOOL_VERSION}/ && \
     perl Makefile.PL && \
     make && \
     make install && \
@@ -95,21 +96,21 @@ RUN apt-get -q update && \
     cp 7zz /usr/local/bin && \
 # Install YARA
     cd /tmp/ && \
-    curl -fsSLO https://github.com/VirusTotal/yara/archive/v$YARA_VERSION.tar.gz && \
-    tar -zxvf v$YARA_VERSION.tar.gz && \
-    cd yara-$YARA_VERSION/ && \
+    curl -fsSLO https://github.com/VirusTotal/yara/archive/refs/tags/v${YARA_VERSION}.tar.gz && \
+    tar -zxvf v${YARA_VERSION}.tar.gz && \
+    cd yara-${YARA_VERSION}/ && \
     ./bootstrap.sh && \
     ./configure --with-crypto --enable-magic --enable-cuckoo && \
     make && make install && \
 # Install yara-python
     cd /tmp/ && \
-    curl -fsSLO https://github.com/VirusTotal/yara-python/archive/v$YARA_VERSION.tar.gz && \
-    tar -zxvf v$YARA_VERSION.tar.gz && \
-    cd yara-python-$YARA_VERSION/ && \
+    curl -fsSLO https://github.com/VirusTotal/yara-python/archive/refs/tags/v${YARA_VERSION}.tar.gz && \
+    tar -zxvf v${YARA_VERSION}.tar.gz && \
+    cd yara-python-${YARA_VERSION}/ && \
     python3 setup.py build --dynamic-linking && \
     python3 setup.py install
 
-# Install Google Chrome for httpx screenshots
+# Install Google Chrome
 RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-linux.gpg && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
     apt-get update -qq && \
