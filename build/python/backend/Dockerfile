@@ -6,7 +6,7 @@ LABEL maintainer="Target Brands, Inc. TTS-CFC-OpenSource@target.com"
 # User configuration
 ARG CONFIG_TESTS=false
 
-# ✅ fixed versions (no 404)
+# ✅ stable versions
 ARG YARA_VERSION=4.3.2
 ARG EXIFTOOL_VERSION=12.76
 
@@ -58,7 +58,7 @@ RUN echo 'deb http://download.opensuse.org/repositories/security:/zeek/xUbuntu_2
     apt-get install -q -y --no-install-recommends zeek-lts
 ENV PATH=$PATH:/opt/zeek/bin
 
-# Install runtime packages
+# Install runtime packages + tools
 RUN apt-get -q update && \
     apt-get install -q -y --no-install-recommends \
     antiword \
@@ -76,12 +76,13 @@ RUN apt-get -q update && \
     unrar \
     unzip \
     upx \
-    jq && \
-# clean up zeek install safely
+    jq \
+    p7zip-full && \
+# clean zeek safely
     test -f /opt/zeek/bin/zeek && cp /opt/zeek/bin/zeek /bin/zeek || true && \
     rm -rf /opt/zeek/share/btest /opt/zeek/bin && \
     rm -rf /opt/zeek/lib/*.a && \
-# Download and compile exiftool
+# Install exiftool
     cd /tmp/ && \
     curl -fsSLO https://github.com/exiftool/exiftool/archive/refs/tags/${EXIFTOOL_VERSION}.tar.gz && \
     tar -zxvf ${EXIFTOOL_VERSION}.tar.gz && \
@@ -89,11 +90,6 @@ RUN apt-get -q update && \
     perl Makefile.PL && \
     make && \
     make install && \
-# Download and move binary for 7z
-    cd /tmp/ && \
-    curl -fsSLO https://7-zip.org/a/7z2409-linux-x64.tar.xz && \
-    tar -xf 7z2409-linux-x64.tar.xz && \
-    cp 7zz /usr/local/bin && \
 # Install YARA
     cd /tmp/ && \
     curl -fsSLO https://github.com/VirusTotal/yara/archive/refs/tags/v${YARA_VERSION}.tar.gz && \
