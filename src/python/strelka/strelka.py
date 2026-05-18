@@ -220,7 +220,7 @@ class Backend(object):
             logging.info("backend started without coordinator")
 
         self._kafka_producer: Optional[KafkaProducer] = None
-        self._kafka_bootstrap = "kafka:29092"
+        self._kafka_bootstrap = os.environ.get("KAFKA_BOOTSTRAP", "kafka:29092")
 
         self.fan_out_children: bool = bool(
             backend_cfg.get("processing", {}).get("fan_out_children", False)

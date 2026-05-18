@@ -1,6 +1,7 @@
 from strelka import strelka
 import json
 import mimetypes
+import os
 import re
 import subprocess
 import hashlib
@@ -474,10 +475,9 @@ class HttpxScanner(strelka.Scanner):
         else:
             uuid_part = "unknown"
 
-        # ✅ Producer واحد خارج اللوب (أوفر + أحسن)
         ANALYSIS_TOPIC = "downloaded.files"
         producer = KafkaProducer(
-            bootstrap_servers=options.get("kafka_bootstrap", "kafka:29092"),
+            bootstrap_servers=options.get("kafka_bootstrap") or os.environ.get("KAFKA_BOOTSTRAP", "kafka:29092"),
             value_serializer=lambda x: json.dumps(x).encode("utf-8"),
             max_request_size=104857600,  # 100MB
         )
