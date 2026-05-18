@@ -60,6 +60,13 @@ RUN cd /tmp && \
     make && \
     make install
 
+# Install 7zz
+RUN cd /tmp && \
+    curl -fLsS -o 7z.tar.xz https://github.com/ip7z/7zip/releases/download/24.09/7z2409-linux-x64.tar.xz && \
+    tar -xf 7z.tar.xz 7zz && \
+    install -m 0755 7zz /usr/local/bin/7zz && \
+    rm -f 7z.tar.xz
+
 # Install YARA
 RUN cd /tmp && \
     curl -fsSLO https://github.com/VirusTotal/yara/archive/refs/tags/v${YARA_VERSION}.tar.gz && \

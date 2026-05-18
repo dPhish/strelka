@@ -1,4 +1,3 @@
-version: '3.7'
 services:
   frontend:
     build:
@@ -28,17 +27,56 @@ services:
     build:
       context: ..
       dockerfile: build/python/backend/Dockerfile
-    command: strelka-backend
-    shm_size: 512mb
+    command: ["supervisord", "-c", "/etc/strelka/supervisord.conf"]
+    shm_size: 1gb
     networks:
       - discover_net
     volumes:
       - ../configs/python/backend/:/etc/strelka/:ro
+      # ScanClamav talks to the clamd sidecar over TCP (clamd:3310) on the
+      # internal docker network. No shared filesystem needed.
     restart: unless-stopped
     depends_on:
       - coordinator
+      - clamd
     deploy:
-      replicas: 7
+      replicas: 4
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 8g
+        reservations:
+          cpus: '3.5'
+          memory: 4g
+
+  clamd:
+    image: clamav/clamav:1.4
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      - CLAMAV_NO_CLAMD=false
+      - CLAMAV_NO_FRESHCLAMD=false
+    volumes:
+      - clamd_db:/var/lib/clamav/
+      - ../configs/clamav/clamd.conf:/etc/clamav/clamd.conf:ro
+    networks:
+      - discover_net
+    healthcheck:
+      test: ["CMD-SHELL", "echo PING | nc -w 2 127.0.0.1 3310 | grep -q PONG"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2g
+        reservations:
+          cpus: '1.0'
+          memory: 1500m
+
+
   # ============================
   # Manager (Redis task cleanup)
   # ============================
@@ -134,3 +172,4 @@ networks:
 
 volumes:
   logs:
+  clamd_db:

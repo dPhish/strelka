@@ -2,20 +2,30 @@
 version: 2024.04.22.01
 logging_cfg: '/etc/strelka/logging.yaml'
 limits:
-  max_files: 5000
-  time_to_live: 900
+
+  max_files: 2000
+  time_to_live: 1800
   max_depth: 15
-  distribution: 600
-  scanner: 150
+  distribution: 300
+  scanner: 60
 coordinator:
   addr: 'coordinator:6379'
   db: 0
-#  blocking_pop_time_sec: 5
+  # Block on the Redis sorted-set pop instead of busy-polling every 250 ms.
+  blocking_pop_time_sec: 5
 tasting:
   mime_db: null
   yara_rules: '/etc/strelka/taste/'
 caching:
   scanner: true
+processing:
+  fan_out_children: true
+trace:
+  pretty_log: true
+  format: simple
+  suppress_stage_events: false
+  heavy_file_size_bytes: 5242880          # 5 MB
+  heavy_file_share_threshold: 0.30        # 30%
 telemetry:
   traces:
     sampling: 1.0
@@ -72,8 +82,17 @@ scanners:
   'ScanClamav':
     - positive:
         flavors:
-          - '*'
+          - 'application/*'
+          - 'image/*'
+      negative:
+        flavors:
+          - 'text/plain'
+          - 'url_file'
+          - 'urls'
+          - 'application/json'
       priority: 5
+      options:
+        max_bytes: 104857600   # 100 MB ceiling on what we ship to clamd
 #  'ScanCcn':
 #    - positive:
 #        flavors:
@@ -775,6 +794,6 @@ scanners:
   'HttpxScanner':
     - positive:
         flavors:
-          - 'text/plain'
-          - 'application/zip'
+          - 'url_file'
+          - 'urls'
       priority: 5

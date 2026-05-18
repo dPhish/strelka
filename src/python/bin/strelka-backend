@@ -5,12 +5,18 @@ strelka-backend
 Command line utility for running Strelka backend server components.
 """
 import argparse
+import os
+import random
+import time
 
 import strelka.config
 import strelka.strelka
 
 
 def main():
+    if not os.environ.get("STRELKA_NO_JITTER"):
+        time.sleep(random.uniform(0, 30))
+
     parser = argparse.ArgumentParser(
         prog="strelka-worker",
         description="runs Strelka workers",

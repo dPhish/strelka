@@ -31,6 +31,8 @@ from .telemetry.traces import get_tracer
 from kafka import KafkaProducer
 import json
 
+perf_log = logging.getLogger("strelka.perf")
+
 
 
 class RequestTimeout(Exception):
@@ -217,6 +219,350 @@ class Backend(object):
         if not self.coordinator:
             logging.info("backend started without coordinator")
 
+        self._kafka_producer: Optional[KafkaProducer] = None
+        self._kafka_bootstrap = "kafka:29092"
+
+        self.fan_out_children: bool = bool(
+            backend_cfg.get("processing", {}).get("fan_out_children", False)
+        )
+
+        import socket
+        self.worker_id: str = os.environ.get("HOSTNAME") or socket.gethostname()
+        self.worker_pid: int = os.getpid()
+
+        self.STAGES = (
+            "ingest",
+            "distribute",
+            "file_analysis",
+            "url_analysis",
+            "aggregation",
+            "finalize",
+            "publish",
+        )
+
+        self._url_scanners = frozenset({"HttpxScanner", "ScanUrl"})
+
+        trace_cfg = backend_cfg.get("trace", {}) or {}
+        self._heavy_file_bytes: int = int(
+            trace_cfg.get("heavy_file_size_bytes", 5 * 1024 * 1024)
+        )
+        self._heavy_file_share: float = float(
+            trace_cfg.get("heavy_file_share_threshold", 0.30)
+        )
+
+        self._pretty_trace_log: bool = bool(
+            trace_cfg.get("pretty_log", True)
+        )
+
+        self._trace_format: str = str(trace_cfg.get("format", "simple")).lower()
+
+        self._suppress_stage_events: bool = bool(
+            trace_cfg.get("suppress_stage_events", False)
+        )
+
+    def _get_kafka_producer(self) -> KafkaProducer:
+        if self._kafka_producer is None:
+
+            self._kafka_producer = KafkaProducer(
+                bootstrap_servers=self._kafka_bootstrap,
+                value_serializer=lambda x: json.dumps(x).encode("utf-8"),
+                max_request_size=104857600,
+                linger_ms=20,
+                acks=1,
+                compression_type="gzip",
+            )
+        return self._kafka_producer
+
+    def _perf(self, payload: dict) -> None:
+        """Emit one JSON line on the strelka.perf logger. Always stamps the
+        worker identity and a wall-clock ISO-8601 timestamp so a stream of
+        records from many containers can be merged and ordered downstream.
+        Callers may pre-populate any of these fields to override.
+        """
+        try:
+            payload.setdefault("worker", self.worker_id)
+            payload.setdefault("worker_pid", self.worker_pid)
+            payload.setdefault(
+                "timestamp",
+                time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime()) +
+                f".{int((time.time() % 1) * 1000):03d}Z",
+            )
+            perf_log.info(json.dumps(payload, default=str))
+        except Exception:
+            pass
+
+    def _stage_event(
+        self,
+        mid: str,
+        trace_id: str,
+        stage: str,
+        event: str,
+        duration_ms: Optional[float] = None,
+        total_duration_ms: Optional[float] = None,
+        **fields,
+    ) -> None:
+        """Emit a stage start/end record in the canonical schema.
+        {mid, trace_id, stage, event, worker, timestamp, duration_ms, ...}
+        Extra fields (filename, root_id, depth, scanners, n_files, etc.) are
+        merged in. When trace.suppress_stage_events is true (high-throughput
+        mode), these per-stage records are silently dropped; the single
+        email_summary at finalize still carries all aggregated durations.
+        """
+        if self._suppress_stage_events:
+            return
+        payload = {
+            "evt": "stage",
+            "mid": mid,
+            "trace_id": trace_id,
+            "stage": stage,
+            "event": event,
+        }
+        if duration_ms is not None:
+            payload["duration_ms"] = round(float(duration_ms), 3)
+        if total_duration_ms is not None:
+            payload["total_duration_ms"] = round(float(total_duration_ms), 3)
+        payload.update(fields)
+        self._perf(payload)
+
+    def _stage_record(
+        self,
+        root_id: str,
+        stage: str,
+        duration_ms: float,
+        expire_at: Optional[int] = None,
+    ) -> None:
+        """Add `duration_ms` to the per-artifact stage total in Redis. Used by
+        every worker that contributes to an artifact so the finalizer can read
+        the totals back at email_summary emission time.
+        """
+        if not self.coordinator or stage not in self.STAGES:
+            return
+        try:
+            p = self.coordinator.pipeline(transaction=False)
+            p.hincrbyfloat(f"art:{root_id}:stages", stage, float(duration_ms))
+            p.sadd(f"art:{root_id}:workers", self.worker_id)
+            if expire_at is not None:
+                p.expireat(f"art:{root_id}:stages", expire_at)
+                p.expireat(f"art:{root_id}:workers", expire_at)
+            p.execute()
+        except Exception:
+            # Never let perf bookkeeping block real work.
+            pass
+
+    @staticmethod
+    def _human_size(n: int) -> str:
+        n = float(max(0, int(n)))
+        for unit in ("B", "KB", "MB", "GB", "TB"):
+            if n < 1024.0:
+                return f"{n:.2f} {unit}" if unit != "B" else f"{int(n)} B"
+            n /= 1024.0
+        return f"{n:.2f} PB"
+
+    def _file_metadata_from_events(self, events: list) -> tuple:
+        """Walk the events list (one entry per scanned file at any depth) and
+        produce the per-file metadata array used by the email_summary.
+        Returns (files_list, totals_dict). Pure function; never raises.
+        """
+        files_meta: list = []
+        total_size_bytes = 0
+        total_file_analysis_ms = 0.0
+        for e in events or []:
+            f = (e.get("file") or {})
+            size = int(f.get("size") or 0)
+            scanner_timings = f.get("_scanner_timings") or []
+            analysis_ms = 0.0
+            for st in scanner_timings:
+                try:
+                    analysis_ms += float(st.get("ms") or 0.0)
+                except (TypeError, ValueError):
+                    pass
+            flavors = f.get("flavors") or {}
+            mime_list = flavors.get("mime") or []
+            mime = mime_list[0] if isinstance(mime_list, list) and mime_list else ""
+            files_meta.append({
+                "name": f.get("name") or "",
+                "uid": f.get("uid") or "",
+                "depth": int(f.get("depth") or 0),
+                "size_bytes": size,
+                "size_human": self._human_size(size),
+                "mime": mime,
+                "analysis_time_ms": round(analysis_ms, 3),
+                "ms_per_kb": round(
+                    (analysis_ms / (size / 1024.0)) if size > 0 else 0.0, 3
+                ),
+                "scanners": [
+                    {"scanner": st.get("scanner"),
+                     "ms": round(float(st.get("ms") or 0.0), 3)}
+                    for st in scanner_timings
+                ],
+            })
+            total_size_bytes += size
+            total_file_analysis_ms += analysis_ms
+
+        totals = {
+            "total_files": len(files_meta),
+            "total_size_bytes": total_size_bytes,
+            "total_size_human": self._human_size(total_size_bytes),
+            "total_file_analysis_ms": round(total_file_analysis_ms, 3),
+        }
+        return files_meta, totals
+
+    def _heavy_file_flags(self, files_meta: list, total_file_analysis_ms: float) -> list:
+        """Return list of {name, reason, size_human, share_of_analysis} for any
+        file that satisfies size>threshold AND share of analysis > threshold.
+        """
+        flagged: list = []
+        if total_file_analysis_ms <= 0:
+            return flagged
+        for f in files_meta:
+            if f["size_bytes"] < self._heavy_file_bytes:
+                continue
+            share = f["analysis_time_ms"] / total_file_analysis_ms
+            if share >= self._heavy_file_share:
+                flagged.append({
+                    "name": f["name"],
+                    "size_human": f["size_human"],
+                    "analysis_time_ms": f["analysis_time_ms"],
+                    "share_of_analysis": round(share, 3),
+                    "reason": "heavy_file_bottleneck",
+                })
+        return flagged
+
+    def _render_simple_trace_block(self, summary: dict) -> str:
+        """Single canonical per-email trace block. Aggregates the per-stage
+        totals collected in Redis into the operator-facing 5-stage view:
+
+            queue_wait, distribute, file_analysis, aggregation, publish
+
+        Emitted exactly once per email (the finalizer is single-instance by
+        construction -- the artifact pending counter goes to 0 in exactly
+        one worker). Thread/distributed safe.
+        """
+        stages = summary.get("stages", {}) or {}
+        mid = summary.get("mid", "")
+        total_ms = summary.get("total_processing_time_ms", 0)
+        queue_wait = stages.get("ingest", 0) or 0
+        distribute = stages.get("distribute", 0) or 0
+        file_analysis = (stages.get("file_analysis", 0) or 0) + (
+            stages.get("url_analysis", 0) or 0
+        )
+        aggregation = (stages.get("aggregation", 0) or 0) + (
+            stages.get("finalize", 0) or 0
+        )
+        publish = stages.get("publish", 0) or 0
+
+        def fmt(v) -> str:
+            return f"{int(round(float(v)))}"
+
+        return (
+            f"\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"EMAIL TRACE: {mid}\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+            f"queue_wait        → {fmt(queue_wait)} ms\n"
+            f"distribute        → {fmt(distribute)} ms\n"
+            f"file_analysis     → {fmt(file_analysis)} ms\n"
+            f"aggregation       → {fmt(aggregation)} ms\n"
+            f"publish           → {fmt(publish)} ms\n\n"
+            f"--------------------------------\n"
+            f"TOTAL TIME        → {fmt(total_ms)} ms\n"
+            f"--------------------------------\n"
+        )
+
+    def _render_email_trace_block(self, summary: dict) -> str:
+        """Build the human-readable EMAIL TRACE block requested by ops.
+        Returns the formatted string; the caller prints to stdout.
+        """
+        mid = summary.get("mid", "")
+        stages = summary.get("stages", {}) or {}
+        bottleneck = summary.get("bottleneck_stage", "")
+        files = summary.get("files", [])
+        total_files = summary.get("total_files", 0)
+        total_size_human = summary.get("total_size_human", "0 B")
+        workers = summary.get("workers", []) or []
+        status = summary.get("status", "SUCCESS")
+        total_ms = summary.get("total_processing_time_ms", 0)
+        heavy = summary.get("heavy_file_bottlenecks") or []
+        ms_per_kb_avg = summary.get("ms_per_kb_avg")
+        top_slow = summary.get("top_slowest_files") or []
+
+        # Format stages with a 🔥 marker on the bottleneck.
+        stage_lines = []
+        for s in self.STAGES:
+            val = stages.get(s, 0)
+            marker = "  🔥 bottleneck" if s == bottleneck else ""
+            stage_lines.append(f"{s:<17} → {int(round(val))} ms{marker}")
+
+        file_lines = []
+        for i, f in enumerate(files, 1):
+            file_lines.append(
+                f"file_{i}:\n"
+                f"   name           → {f.get('name') or '(unnamed)'}\n"
+                f"   size           → {f.get('size_human')}\n"
+                f"   mime           → {f.get('mime') or '(unknown)'}\n"
+                f"   analysis_time  → {int(round(f.get('analysis_time_ms') or 0))} ms"
+            )
+
+        heavy_lines = ""
+        if heavy:
+            heavy_lines = "\n--------------------------------\nHEAVY FILE BOTTLENECKS\n--------------------------------\n"
+            for h in heavy:
+                heavy_lines += (
+                    f"  ⚠️  {h.get('name')} "
+                    f"({h.get('size_human')}, "
+                    f"{int(round(h.get('analysis_time_ms') or 0))} ms, "
+                    f"{int(round((h.get('share_of_analysis') or 0) * 100))}% of analysis)\n"
+                )
+
+        top_slow_lines = ""
+        if top_slow:
+            top_slow_lines = "\n--------------------------------\nTOP 3 SLOWEST FILES\n--------------------------------\n"
+            for i, f in enumerate(top_slow, 1):
+                top_slow_lines += (
+                    f"  {i}. {f.get('name') or '(unnamed)'} "
+                    f"({f.get('size_human')}, "
+                    f"{int(round(f.get('analysis_time_ms') or 0))} ms)\n"
+                )
+
+        ratio_line = ""
+        if ms_per_kb_avg is not None:
+            ratio_line = f"AVG ms/KB         → {ms_per_kb_avg}\n"
+
+        return (
+            f"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"EMAIL TRACE: {mid}\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"\n" + "\n".join(stage_lines) + "\n"
+            f"\n--------------------------------\n"
+            f"FILES METADATA\n"
+            f"--------------------------------\n"
+            f"total_files       → {total_files}\n"
+            f"total_size        → {total_size_human}\n"
+            f"{ratio_line}"
+            f"\n" + "\n\n".join(file_lines) + ("\n" if file_lines else "")
+            + top_slow_lines
+            + heavy_lines
+            + f"\n--------------------------------\n"
+            f"TOTAL TIME        → {int(round(total_ms))} ms\n"
+            f"WORKERS           → {workers}\n"
+            f"STATUS            → {status}\n"
+            f"--------------------------------\n"
+        )
+
+    def _trace_id_from(self, request_meta: dict, root_id: str) -> str:
+        """Pick a trace id: explicit meta.trace_id > w3c traceparent > root_id."""
+        if not request_meta:
+            return root_id
+        explicit = request_meta.get("trace_id")
+        if explicit:
+            return str(explicit)
+        tp = request_meta.get("traceparent") or request_meta.get("tracecontext")
+        if tp:
+            # traceparent = "version-traceid-spanid-flags"
+            parts = str(tp).split("-")
+            if len(parts) >= 2 and parts[1]:
+                return parts[1]
+        return root_id
+
     def taste_mime(self, data: bytes) -> list:
         """Tastes file data with libmagic."""
         return [self.compiled_magic.from_buffer(data)]
@@ -309,27 +655,39 @@ class Backend(object):
             traceparent = None
             task_info = {}
             request_meta = {}
+            is_child_task = False
+            self_id = ""
 
             # Support old (ID only) and new (JSON) style requests
             try:
                 task_info = json.loads(task_item)
             except json.JSONDecodeError:
                 root_id = task_item.decode()
+                self_id = root_id
                 # Create new file object for task, use the request root_id as the pointer
                 file = File(pointer=root_id)
             else:
-                root_id = task_info["id"]
+                self_id = task_info.get("id", "")
+                task_root = task_info.get("root") or self_id
+                root_id = task_root
+                is_child_task = bool(task_info.get("root")) and task_info["root"] != self_id
                 request_meta = task_info.get("meta", {}) or {}
                 try:
                     file = File(
-                        pointer=root_id, name=task_info["attributes"]["filename"]
+                        pointer=self_id, name=task_info["attributes"]["filename"]
                     )
                     traceparent = task_info.get("tracecontext", "")
                 except KeyError as ex:
                     logging.debug(
                         f"No filename attached (error: {ex}) to request: {task_item}"
                     )
-                    file = File(pointer=root_id)
+                    file = File(pointer=self_id)
+
+                file.parent = task_info.get("parent", "") or ""
+                try:
+                    file.depth = int(task_info.get("depth", 0) or 0)
+                except (TypeError, ValueError):
+                    file.depth = 0
 
             expire_at = math.ceil(expire_at)
             timeout = math.ceil(expire_at - time.time())
@@ -338,35 +696,181 @@ class Backend(object):
             if timeout <= 0:
                 continue
 
+            mid_for_perf = (request_meta or {}).get("mid") or root_id
+            trace_id = self._trace_id_from(request_meta, root_id)
+            enqueued_at = (request_meta or {}).get("enqueued_at")
+            try:
+                queue_wait_ms = (
+                    (time.time() - float(enqueued_at)) * 1000.0
+                    if enqueued_at is not None
+                    else None
+                )
+            except (TypeError, ValueError):
+                queue_wait_ms = None
+
+            self._stage_event(
+                mid_for_perf, trace_id, "ingest", "start",
+                root_id=root_id, depth=file.depth,
+                is_child=is_child_task, queue_wait_ms=queue_wait_ms,
+                filename=file.name or "",
+            )
+            ingest_ms = queue_wait_ms if queue_wait_ms is not None else 0.0
+            self._stage_event(
+                mid_for_perf, trace_id, "ingest", "end",
+                duration_ms=ingest_ms, root_id=root_id, depth=file.depth,
+                filename=file.name or "",
+            )
+
+            stage_timings: dict = {}
+            events: list = []
+            email_t_start = time.monotonic()
+            email_result = "ok"
+
             try:
                 # Prepare timeout handler
                 signal.signal(signal.SIGALRM, timeout_handler(RequestTimeout))
                 signal.alarm(timeout)
 
-                # Distribute the file to the scanners
+                if self.fan_out_children and not is_child_task and self.coordinator:
+                    ttl_sec = max(int(expire_at - time.time()), 1)
+                    meta_blob = json.dumps({
+                        "request_meta": request_meta,
+                        "root_id": root_id,
+                        "root_file_name": file.name or "",
+                        "root_enqueued_at": enqueued_at,
+                        "trace_id": trace_id,
+                        "mid": mid_for_perf,
+                    })
+                    init_p = self.coordinator.pipeline(transaction=False)
+                    init_p.hsetnx(f"art:{root_id}:counters", "pending", 1)
+                    init_p.expire(f"art:{root_id}:counters", ttl_sec)
+                    init_p.set(f"art:{root_id}:meta", meta_blob, ex=ttl_sec, nx=True)
+                    init_p.execute()
+
+                # ── stage: file_analysis ─────────────────────────────────
+                self._stage_event(
+                    mid_for_perf, trace_id, "file_analysis", "start",
+                    root_id=root_id, depth=file.depth,
+                    filename=file.name or "",
+                )
+                t0 = time.monotonic()
                 events = self.distribute(
                     root_id,
                     file,
                     expire_at,
                     traceparent=traceparent,
                     request_meta=request_meta,
+                    stage_timings=stage_timings,
                 )
-                self.aggregate_and_publish(root_id, file, events, request_meta)
+                file_analysis_ms = (time.monotonic() - t0) * 1000.0
+                stage_timings["distribute_ms"] = file_analysis_ms
 
-                # Push completed event back to Redis to complete request
-                p = self.coordinator.pipeline(transaction=False)
-                p.rpush(f"event:{root_id}", "FIN")
-                p.expireat(f"event:{root_id}", expire_at)
-                p.execute()
+                url_analysis_ms = 0.0
+                for e in events:
+                    for st in (e.get("file") or {}).get("_scanner_timings", []) or []:
+                        if st.get("scanner") in self._url_scanners:
+                            url_analysis_ms += float(st.get("ms") or 0.0)
+                file_only_ms = max(0.0, file_analysis_ms - url_analysis_ms)
+                self._stage_record(root_id, "file_analysis", file_only_ms, expire_at)
+                if url_analysis_ms > 0:
+                    self._stage_record(root_id, "url_analysis", url_analysis_ms, expire_at)
+
+                self._stage_record(root_id, "ingest", ingest_ms, expire_at)
+                distribute_ms = (
+                    float(stage_timings.get("lpop_ms") or 0.0)
+                    + float(stage_timings.get("flavor_match_ms") or 0.0)
+                    + float(stage_timings.get("scanner_match_ms") or 0.0)
+                )
+                if distribute_ms > 0:
+                    self._stage_record(root_id, "distribute", distribute_ms, expire_at)
+                self._stage_event(
+                    mid_for_perf, trace_id, "file_analysis", "end",
+                    duration_ms=file_analysis_ms,
+                    root_id=root_id, depth=file.depth,
+                    filename=file.name or "",
+                    n_events=len(events),
+                    url_ms=round(url_analysis_ms, 3),
+                )
+
+                if self.fan_out_children and self.coordinator:
+                    # ── stage: aggregation ───────────────────────────────
+                    self._stage_event(
+                        mid_for_perf, trace_id, "aggregation", "start",
+                        root_id=root_id, n_events=len(events),
+                    )
+                    t_agg = time.monotonic()
+                    if events:
+                        ev_p = self.coordinator.pipeline(transaction=False)
+                        for e in events:
+                            ev_p.rpush(
+                                f"art:{root_id}:events",
+                                json.dumps(self._json_sanitize(e)),
+                            )
+                        ev_p.expireat(f"art:{root_id}:events", expire_at)
+                        ev_p.execute()
+                    agg_ms = (time.monotonic() - t_agg) * 1000.0
+                    self._stage_record(root_id, "aggregation", agg_ms, expire_at)
+                    self._stage_event(
+                        mid_for_perf, trace_id, "aggregation", "end",
+                        duration_ms=agg_ms, root_id=root_id,
+                    )
+
+                    new_pending = int(
+                        self.coordinator.hincrby(
+                            f"art:{root_id}:counters", "pending", -1
+                        )
+                    )
+                    if new_pending <= 0:
+                        t0 = time.monotonic()
+                        self._finalize_artifact(root_id, expire_at)
+                        stage_timings["aggregate_publish_ms"] = (
+                            time.monotonic() - t0
+                        ) * 1000.0
+                else:
+                    t0 = time.monotonic()
+                    self.aggregate_and_publish(
+                        root_id, file, events, request_meta
+                    )
+                    stage_timings["aggregate_publish_ms"] = (
+                        time.monotonic() - t0
+                    ) * 1000.0
+
+
+                    p = self.coordinator.pipeline(transaction=False)
+                    p.rpush(f"event:{root_id}", "FIN")
+                    p.expireat(f"event:{root_id}", expire_at)
+                    p.execute()
 
                 # Reset timeout handler
                 signal.alarm(0)
 
             except RequestTimeout:
+                email_result = "request_timeout"
                 logging.debug(f"[strelka_flow] ⚠️ mid={request_meta.get('mid', root_id)} stage=aggregation action=partial reason=request_timeout status=warning")
             except Exception:
+                email_result = "exception"
                 signal.alarm(0)
                 logging.exception(f"[strelka_flow] ❌ mid={request_meta.get('mid', root_id)} stage=analysis action=failure status=failed error=unknown_exception")
+
+            total_ms = (time.monotonic() - email_t_start) * 1000.0
+            scanners_used = sorted({
+                s
+                for e in events
+                for s in ((e.get("file") or {}).get("scanners") or [])
+            })
+            self._perf({
+                "evt": "email_done",
+                "mid": mid_for_perf,
+                "trace_id": trace_id,
+                "root_id": root_id,
+                "is_child": is_child_task,
+                "queue_wait_ms": queue_wait_ms,
+                "total_ms": total_ms,
+                "n_files": len(events),
+                "stages": stage_timings,
+                "scanners_used": scanners_used,
+                "result": email_result,
+            })
 
             count += 1
 
@@ -382,6 +886,7 @@ class Backend(object):
         expire_at: int,
         traceparent: Optional[str] = "",
         request_meta: Optional[dict] = None,
+        stage_timings: Optional[dict] = None,
     ) -> list[dict]:
         """Distributes a file through scanners.
 
@@ -428,12 +933,15 @@ class Backend(object):
                         data = file.data
                     elif self.coordinator:
                         # Pull data for file from coordinator
+                        _t_lpop = time.monotonic()
                         with self.tracer.start_as_current_span("lpop"):
                             while True:
                                 pop = self.coordinator.lpop(f"data:{file.pointer}")
                                 if pop is None:
                                     break
                                 data += pop
+                        if stage_timings is not None:
+                            stage_timings["lpop_ms"] = (time.monotonic() - _t_lpop) * 1000.0
 
                         # Initialize Redis pipeline
                         pipeline = self.coordinator.pipeline(transaction=False)
@@ -441,10 +949,17 @@ class Backend(object):
                         raise Exception("No data or coordinator available")
 
                     # Match data to mime and yara flavors
+                    _t_flavor = time.monotonic()
                     file.add_flavors(self.match_flavors(data))
+                    _flavor_ms = (time.monotonic() - _t_flavor) * 1000.0
 
                     # Get list of matching scanners
+                    _t_sm = time.monotonic()
                     scanner_list = self.match_scanners(file)
+                    _scanner_match_ms = (time.monotonic() - _t_sm) * 1000.0
+                    if stage_timings is not None:
+                        stage_timings["flavor_match_ms"] = _flavor_ms
+                        stage_timings["scanner_match_ms"] = _scanner_match_ms
 
                     tree_dict = {
                         "node": file.uid,
@@ -506,8 +1021,10 @@ class Backend(object):
 
                     scan: dict = {}
                     iocs: list = []
+                    scanner_timings: list = []
 
                     for scanner in scanner_list:
+                        _t_scan = time.monotonic()
                         try:
                             name = scanner["name"]
                             und_name = inflection.underscore(name)
@@ -561,11 +1078,18 @@ class Backend(object):
                                 f'scanner {scanner.get("name", "__missing__")} not'
                                 " found"
                             )
+                        finally:
+                            scanner_timings.append({
+                                "scanner": scanner.get("name", "__missing__"),
+                                "ms": (time.monotonic() - _t_scan) * 1000.0,
+                            })
 
+                    file_dict = file.dictionary()
+                    file_dict["_scanner_timings"] = scanner_timings
                     event = {
-                        **{"file": file.dictionary()},
-                        **{"scan": scan},
-                        **{"iocs": iocs},
+                        "file": file_dict,
+                        "scan": scan,
+                        "iocs": iocs,
                     }
 
                     # Collect events for local-only
@@ -595,22 +1119,84 @@ class Backend(object):
                         pipeline.execute()
                     signal.alarm(0)
 
+                    self._perf({
+                        "evt": "file_done",
+                        "mid": mid,
+                        "trace_id": self._trace_id_from(request_meta or {}, root_id),
+                        "root_id": root_id,
+                        "file_uid": file.uid,
+                        "parent": file.parent,
+                        "depth": file.depth,
+                        "name": file.name,
+                        "size": file.size,
+                        "flavors": file.flavors,
+                        "scanners": scanner_timings,
+                        "n_children_extracted": len(files),
+                    })
+
                 except DistributionTimeout:
                     # FIXME: node id is not always file.uid
                     logging.exception(f"node {file.uid} timed out")
 
-                # Re-ingest extracted files
-                for scanner_file in files:
-                    scanner_file.parent = file.uid
-                    scanner_file.depth = file.depth + 1
-                    events.extend(
-                        self.distribute(
-                            root_id,
-                            scanner_file,
-                            expire_at,
-                            request_meta=request_meta,
-                        )
+                if (
+                    self.fan_out_children
+                    and self.coordinator
+                    and files
+                ):
+                    child_count = len(files)
+                    mid_for_children = (request_meta or {}).get("mid", "")
+                    fanout_p = self.coordinator.pipeline(transaction=True)
+                    fanout_p.hincrby(
+                        f"art:{root_id}:counters", "pending", child_count
                     )
+                    for scanner_file in files:
+                        scanner_file.parent = file.uid
+                        scanner_file.depth = file.depth + 1
+                        child_task = {
+                            "id": scanner_file.pointer,
+                            "root": root_id,
+                            "parent": file.uid,
+                            "depth": file.depth + 1,
+                            "attributes": {
+                                "filename": scanner_file.name or "",
+                            },
+                            "source": scanner_file.source or "",
+                            "meta": {
+                                "mid": mid_for_children,
+                                "trace_id": self._trace_id_from(
+                                    request_meta or {}, root_id
+                                ),
+                                "_child": True,
+                            },
+                        }
+                        fanout_p.zadd(
+                            "tasks",
+                            {json.dumps(child_task): float(expire_at)},
+                        )
+                        fanout_p.expireat(
+                            f"data:{scanner_file.pointer}", expire_at
+                        )
+                    fanout_p.execute()
+                    self._perf({
+                        "evt": "fanout",
+                        "root_id": root_id,
+                        "parent_uid": file.uid,
+                        "parent_depth": file.depth,
+                        "n_children": child_count,
+                    })
+                elif files:
+
+                    for scanner_file in files:
+                        scanner_file.parent = file.uid
+                        scanner_file.depth = file.depth + 1
+                        events.extend(
+                            self.distribute(
+                                root_id,
+                                scanner_file,
+                                expire_at,
+                                request_meta=request_meta,
+                            )
+                        )
 
             except RequestTimeout:
                 signal.alarm(0)
@@ -686,14 +1272,232 @@ class Backend(object):
 
         payload = self._build_final_payload(mid, email_context, artifact_items, expected, processed)
         topic = "email.files.analysis"
-        producer = KafkaProducer(
-            bootstrap_servers="kafka:29092",
-            value_serializer=lambda x: json.dumps(x).encode("utf-8"),
-            max_request_size=104857600,
-        )
+        _t_kafka = time.monotonic()
+        producer = self._get_kafka_producer()
         producer.send(topic, value=self._json_sanitize(payload))
         producer.flush(timeout=5)
+        kafka_ms = (time.monotonic() - _t_kafka) * 1000.0
+        self._perf({
+            "evt": "kafka_publish",
+            "mid": mid,
+            "topic": topic,
+            "ms": kafka_ms,
+            "expected_items": expected,
+            "processed_items": processed,
+        })
         logging.info(f"[strelka_flow] 📤✅ mid={mid} stage=publish action=completed topic=email.files.analysis status=success")
+
+    def _finalize_artifact(self, root_id: str, expire_at: int) -> None:
+        """Fan-out finalizer: invoked by whichever worker drives the artifact
+        pending counter to 0. Reconstructs the events list and the original
+        request context from Redis, calls aggregate_and_publish exactly once
+        for this artifact, then signals FIN to the frontend and cleans up the
+        per-artifact keys.
+        """
+        if not self.coordinator:
+            return
+
+        t_start = time.monotonic()
+        meta_raw = self.coordinator.get(f"art:{root_id}:meta")
+        trace_id_finalize = root_id
+        mid_finalize = root_id
+        root_enqueued_at = None
+        if not meta_raw:
+            logging.warning(
+                f"[strelka_flow] ⚠️ stage=finalize action=missing_meta root_id={root_id} status=warning"
+            )
+            request_meta = {}
+            root_file_name = ""
+        else:
+            try:
+                meta_blob = json.loads(meta_raw)
+            except Exception:
+                logging.exception("finalize_artifact: bad meta")
+                meta_blob = {}
+            request_meta = meta_blob.get("request_meta") or {}
+            root_file_name = meta_blob.get("root_file_name") or ""
+            trace_id_finalize = meta_blob.get("trace_id") or root_id
+            mid_finalize = meta_blob.get("mid") or (request_meta.get("mid") or root_id)
+            root_enqueued_at = meta_blob.get("root_enqueued_at")
+
+        # ── stage: finalize start ────────────────────────────────────────
+        self._stage_event(
+            mid_finalize, trace_id_finalize, "finalize", "start",
+            root_id=root_id,
+        )
+
+        raw_events = self.coordinator.lrange(f"art:{root_id}:events", 0, -1) or []
+        events: list = []
+        for r in raw_events:
+            try:
+                events.append(json.loads(r))
+            except Exception:
+                continue
+
+        # Locate the root file's own event for the root_file payload.
+        root_file_dict: Optional[dict] = None
+        for e in events:
+            tree = (e.get("file") or {}).get("tree") or {}
+            if tree.get("node") == root_id:
+                root_file_dict = e.get("file")
+                break
+        if root_file_dict is None:
+            root_file_dict = {"name": root_file_name}
+
+        class _ProxyFile:
+            def __init__(self, d: dict, name: str) -> None:
+                self._d = d
+                self.name = name
+
+            def dictionary(self) -> dict:
+                return self._d
+
+        proxy = _ProxyFile(root_file_dict, root_file_name)
+
+        # ── stage: publish ───────────────────────────────────────────────
+        self._stage_event(
+            mid_finalize, trace_id_finalize, "publish", "start",
+            root_id=root_id, n_events=len(events),
+        )
+        t_pub = time.monotonic()
+        # aggregate_and_publish only uses root_file.name and root_file.dictionary()
+        self.aggregate_and_publish(root_id, proxy, events, request_meta)  # type: ignore[arg-type]
+        publish_ms = (time.monotonic() - t_pub) * 1000.0
+        self._stage_record(root_id, "publish", publish_ms, expire_at)
+        self._stage_event(
+            mid_finalize, trace_id_finalize, "publish", "end",
+            duration_ms=publish_ms, root_id=root_id,
+        )
+
+        # Signal completion to the frontend and reap the per-artifact keys.
+        fin_p = self.coordinator.pipeline(transaction=False)
+        fin_p.rpush(f"event:{root_id}", "FIN")
+        fin_p.expireat(f"event:{root_id}", expire_at)
+        fin_p.execute()
+
+        finalize_ms = (time.monotonic() - t_start) * 1000.0
+        self._stage_record(root_id, "finalize", finalize_ms, expire_at)
+        self._stage_event(
+            mid_finalize, trace_id_finalize, "finalize", "end",
+            duration_ms=finalize_ms, root_id=root_id,
+        )
+
+        # ── email_summary ────────────────────────────────────────────────
+        try:
+            stages_raw = self.coordinator.hgetall(f"art:{root_id}:stages") or {}
+            workers_raw = self.coordinator.smembers(f"art:{root_id}:workers") or set()
+        except Exception:
+            stages_raw, workers_raw = {}, set()
+
+        def _dec(v):
+            if isinstance(v, bytes):
+                v = v.decode()
+            try:
+                return round(float(v), 3)
+            except (TypeError, ValueError):
+                return 0.0
+
+        stages = {
+            (k.decode() if isinstance(k, bytes) else k): _dec(v)
+            for k, v in stages_raw.items()
+        }
+        for s in self.STAGES:
+            stages.setdefault(s, 0.0)
+
+        if root_enqueued_at is not None:
+            try:
+                total_wall_ms = (time.time() - float(root_enqueued_at)) * 1000.0
+            except (TypeError, ValueError):
+                total_wall_ms = sum(stages.values())
+        else:
+            total_wall_ms = sum(stages.values())
+
+        # Bottleneck = the stage with the highest accumulated CPU time. Tie
+        # break to the leftmost in STAGES so output is deterministic.
+        bottleneck = max(self.STAGES, key=lambda s: (stages.get(s, 0.0), -self.STAGES.index(s)))
+
+        # ── Per-file metadata + correlation analytics ────────────────────
+        files_meta, file_totals = self._file_metadata_from_events(events)
+        # Top 3 slowest files (by analysis_time_ms).
+        top_slow = sorted(
+            files_meta, key=lambda f: f["analysis_time_ms"], reverse=True
+        )[:3]
+        # Average ms per KB across all non-empty files (size > 0).
+        sized = [f for f in files_meta if f["size_bytes"] > 0]
+        if sized:
+            ms_per_kb_avg = round(
+                sum(f["analysis_time_ms"] for f in sized)
+                / sum(f["size_bytes"] / 1024.0 for f in sized),
+                3,
+            )
+        else:
+            ms_per_kb_avg = None
+        heavy_flags = self._heavy_file_flags(
+            files_meta, file_totals["total_file_analysis_ms"]
+        )
+        status = "FAILED" if any(
+            (e.get("scan") or {}).get("ScanError") for e in events
+        ) else "SUCCESS"
+
+        summary = {
+            "evt": "email_summary",
+            "mid": mid_finalize,
+            "trace_id": trace_id_finalize,
+            "root_id": root_id,
+            "total_processing_time_ms": round(float(total_wall_ms), 3),
+            "stages": stages,
+            "bottleneck_stage": bottleneck,
+            "n_files": len(events),
+            "workers": sorted(
+                w.decode() if isinstance(w, bytes) else w for w in workers_raw
+            ),
+            # New: per-file metadata + bottleneck analytics
+            "files": files_meta,
+            "total_files": file_totals["total_files"],
+            "total_size_bytes": file_totals["total_size_bytes"],
+            "total_size_human": file_totals["total_size_human"],
+            "total_file_analysis_ms": file_totals["total_file_analysis_ms"],
+            "top_slowest_files": [
+                {k: v for k, v in f.items() if k != "scanners"} for f in top_slow
+            ],
+            "ms_per_kb_avg": ms_per_kb_avg,
+            "heavy_file_bottlenecks": heavy_flags,
+            "status": status,
+        }
+        self._perf(summary)
+
+        if self._pretty_trace_log:
+            try:
+                fmt = self._trace_format
+                if fmt == "rich":
+                    print(self._render_email_trace_block(summary), flush=True)
+                elif fmt == "both":
+                    print(self._render_simple_trace_block(summary), flush=True)
+                    print(self._render_email_trace_block(summary), flush=True)
+                else:  # "simple" (default)
+                    print(self._render_simple_trace_block(summary), flush=True)
+            except Exception:
+                pass
+
+        try:
+            cleanup_p = self.coordinator.pipeline(transaction=False)
+            cleanup_p.delete(f"art:{root_id}:events")
+            cleanup_p.delete(f"art:{root_id}:counters")
+            cleanup_p.delete(f"art:{root_id}:meta")
+            cleanup_p.delete(f"art:{root_id}:stages")
+            cleanup_p.delete(f"art:{root_id}:workers")
+            cleanup_p.execute()
+        except Exception:
+            pass
+
+        self._perf({
+            "evt": "artifact_finalize",
+            "mid": mid_finalize,
+            "trace_id": trace_id_finalize,
+            "root_id": root_id,
+            "ms": finalize_ms,
+            "n_events": len(events),
+        })
 
     def _decode_email_context(self, mid: str, email_context_b64: str) -> dict:
         if not email_context_b64:
@@ -926,6 +1730,21 @@ class Backend(object):
         Returns:
             Dictionary containing the assigned scanner or None.
         """
+        import fnmatch
+
+        def _flavor_matches(pattern: str, file_flavors) -> bool:
+            """Match a flavor pattern against the file's flavor set.
+            Plain strings are exact-match (legacy behavior). Patterns
+            containing '*' or '?' use glob semantics, so `application/*`
+            matches `application/pdf`, `application/zip`, etc. This is
+            additive: existing literal flavors in backend.yaml are
+            unaffected.
+            """
+            flavors_iter = list(itertools.chain(*file_flavors.values()))
+            if "*" in pattern or "?" in pattern:
+                return any(fnmatch.fnmatchcase(f, pattern) for f in flavors_iter)
+            return pattern in flavors_iter
+
         for mapping in mappings:
             negatives = mapping.get("negative", {})
             positives = mapping.get("positive", {})
@@ -942,7 +1761,7 @@ class Backend(object):
             }
 
             for neg_flavor in neg_flavors:
-                if neg_flavor in itertools.chain(*file.flavors.values()):
+                if _flavor_matches(neg_flavor, file.flavors):
                     return {}
             if neg_filename:
                 if re.search(neg_filename, file.name):
@@ -951,9 +1770,9 @@ class Backend(object):
                 if file.source in neg_source:
                     return {}
             for pos_flavor in pos_flavors:
-                if (
-                    pos_flavor == "*" and not ignore_wildcards
-                ) or pos_flavor in itertools.chain(*file.flavors.values()):
+                if pos_flavor == "*" and not ignore_wildcards:
+                    return assigned
+                if _flavor_matches(pos_flavor, file.flavors):
                     return assigned
             if pos_filename:
                 if re.search(pos_filename, file.name):

@@ -48,11 +48,12 @@ type server struct {
 }
 
 type request struct {
-	Attributes *strelka.Attributes `json:"attributes,omitempty"`
-	Client     string              `json:"client,omitempty"`
-	Id         string              `json:"id,omitempty"`
-	Source     string              `json:"source,omitempty"`
-	Time       int64               `json:"time,omitempty"`
+	Attributes *strelka.Attributes    `json:"attributes,omitempty"`
+	Client     string                 `json:"client,omitempty"`
+	Id         string                 `json:"id,omitempty"`
+	Source     string                 `json:"source,omitempty"`
+	Time       int64                  `json:"time,omitempty"`
+	Meta       map[string]interface{} `json:"meta,omitempty"`
 }
 
 func (s *server) Check(ctx context.Context, req *grpc_health_v1.HealthCheckRequest) (*grpc_health_v1.HealthCheckResponse, error) {
@@ -126,6 +127,9 @@ func (s *server) ScanFile(stream strelka.Frontend_ScanFileServer) error {
 		Id:         req.Id,
 		Source:     req.Source,
 		Time:       time.Now().Unix(),
+		Meta: map[string]interface{}{
+			"enqueued_at": float64(time.Now().UnixNano()) / 1e9,
+		},
 	}
 
 	// If the client requests gatekeeper caching support & gatekeeper is enabled/present

@@ -1,96 +1,86 @@
-import shutil
-import subprocess
-import tempfile
+import os
+from io import BytesIO
+
+import clamd
 
 from strelka import strelka
 
 
 class ScanClamav(strelka.Scanner):
-    """
-    This scanner runs against a given file and returns a ClamAV scan that has a determination if the file is infected
-    or not based on the ClamAV signature database.
+    """Streams the file's bytes to clamd via INSTREAM over a Unix socket.
+
+    The previous implementation shelled out to `clamscan` for every file
+    (cold-loading the ~1 GB signature DB each time) and ran `freshclam`
+    before every scan. Both have been removed. The clamd daemon holds the
+    DB resident; a query costs O(scan-time), typically 5-30 ms per file.
 
     Scanner Type: Collection
 
-    Attributes:
-        None
+    Output fields:
+        status:     "OK" | "FOUND" | "ERROR" | "UNKNOWN" | "skipped_oversize"
+        signature:  ClamAV signature name (set only when status == "FOUND")
+        size_bytes: original payload size (set when skipped_oversize)
 
-    ## Detection Use Cases
-    !!! info "Detection Use Cases"
-        - **Scan Determination**
-            - This scanner provides a inital determination on a file if it is infected or not based on the
-              the ClamAV signature database.
-
-    ## Known Limitations
-    !!! warning "Known Limitations"
-        - **ClamAV Signature Database**
-            - This scanner relies on the ClamAV signature database which is not necesarily all-encompassing. Though
-              the scanner may return a determination, users should be advise that this is not exaustive.
-
-    ## To Do
-    !!! question "To Do"
-        - The ClamAV signature database is currently pulled every scan as a POC. This could be converted to a
-          signature pull on a cadence, such as every 24 hours.
-
-    ## References
-    !!! quote "References"
-    - [ClamAV Documentation Source](https://docs.clamav.net/Introduction.html)
-    - [BlogPost on ClamAV Scanner](https://simovits.com/strelka-let-us-build-a-scanner/)
-
-    ## Contributors
-    !!! example "Contributors"
-        - [Sara Kalupa](https://github.com/skalupa)
-
+    Flags:
+        clamd_unavailable, clamd_connection_error, clamd_retry_failed,
+        clamav_scan_error, clamav_signature_match, clamav_skipped_oversize
     """
+    SOCKET = os.environ.get("CLAMD_SOCKET", "").strip()
+    HOST = os.environ.get("CLAMD_HOST", "clamd")
+    PORT = int(os.environ.get("CLAMD_PORT", "3310"))
+
+    _client = None
+
+    @classmethod
+    def _get_client(cls):
+        if cls._client is None:
+            if cls.SOCKET:
+                cls._client = clamd.ClamdUnixSocket(path=cls.SOCKET, timeout=30)
+            else:
+                cls._client = clamd.ClamdNetworkSocket(
+                    host=cls.HOST, port=cls.PORT, timeout=30
+                )
+        return cls._client
+
+    @classmethod
+    def _reset_client(cls):
+        cls._client = None
 
     def scan(self, data, file, options, expire_at):
-        try:
-            # Check if ClamAV package is installed
-            if not shutil.which("clamscan"):
-                self.flags.append("clamav_not_installed_error")
-                return
-        except Exception as e:
-            self.flags.append(str(e))
+        max_bytes = int(options.get("max_bytes", 100 * 1024 * 1024))
+        if len(data) > max_bytes:
+            self.flags.append("clamav_skipped_oversize")
+            self.event["status"] = "skipped_oversize"
+            self.event["size_bytes"] = len(data)
             return
 
         try:
-            with tempfile.NamedTemporaryFile(dir="/tmp/", mode="wb") as tmp_data:
-                tmp_data.write(data)
-                tmp_data.flush()
-                tmp_data.seek(0)
+            client = self._get_client()
+        except Exception:
+            self.flags.append("clamd_unavailable")
+            return
 
-                # Run freshclam to gret the newest database signatures
-                stdout, stderr = subprocess.Popen(
-                    ["freshclam"],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                ).communicate(timeout=self.scanner_timeout)
-
-                temp_log = tempfile.NamedTemporaryFile(dir="/tmp/", mode="wb")
-                loglocation = "--log=" + temp_log.name
-
-                # Run the actual ClamAV scan and report to local temp log file
-                process = subprocess.Popen(
-                    ["clamscan", "--disable-cache", loglocation, tmp_data.name],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                )
-                stdout, stderr = process.communicate()
-
-                with open(temp_log.name, "r") as file:
-                    for line in file:
-                        if ":" in line:
-                            # Attempt to split out scan information
-                            splitline = line.split(":")
-                            self.event[splitline[0]] = splitline[1].strip()
-                        else:
-                            continue
-
+        try:
+            res = client.instream(BytesIO(data))
+        except clamd.ConnectionError:
+            self.flags.append("clamd_connection_error")
+            self._reset_client()
+            try:
+                res = self._get_client().instream(BytesIO(data))
+            except Exception:
+                self.flags.append("clamd_retry_failed")
+                return
         except strelka.ScannerTimeout:
             raise
         except Exception:
-            self.flags.append("clamAV_Scan_process_error")
+            self.flags.append("clamav_scan_error")
             raise
-        finally:
-            # Ensure that tempfile gets closed out if there are any issues
-            tmp_data.close()
+
+        verdict, signature = res.get("stream", (None, None))
+        self.event["status"] = verdict or "UNKNOWN"
+        if verdict == "FOUND":
+            self.event["signature"] = signature
+            self.flags.append("clamav_signature_match")
+        elif verdict == "ERROR":
+            self.flags.append("clamav_scan_error")
+            self.event["error"] = str(signature) if signature else "unknown"

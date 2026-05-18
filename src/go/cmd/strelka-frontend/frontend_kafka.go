@@ -116,9 +116,12 @@ func (s *server) processRawMessage(raw RawKafkaMessage) {
 		"time":   raw.Time,
 	}
 
-	if len(raw.Meta) > 0 {
-		reqObj["meta"] = raw.Meta
+	meta := make(map[string]interface{}, len(raw.Meta)+1)
+	for k, v := range raw.Meta {
+		meta[k] = v
 	}
+	meta["enqueued_at"] = float64(time.Now().UnixNano()) / 1e9
+	reqObj["meta"] = meta
 
 	// Add to Redis sorted task list
 	reqJSON, err := json.Marshal(reqObj)
