@@ -57,7 +57,7 @@ services:
       dockerfile: build/go/frontend/Dockerfile
     command: strelka-frontend -locallog=true -kafkalog=true
     environment:
-      KAFKA_BOOTSTRAP: kafka:29092
+      KAFKA_BOOTSTRAP: 38.242.221.32:9092
       RAW_TOPIC: raw
       ANALYSIS_TOPIC: analysis
     ports:

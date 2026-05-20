@@ -725,7 +725,7 @@ class Backend(object):
         payload = self._build_final_payload(mid, email_context, artifact_items, expected, processed)
         topic = "email.files.analysis"
         producer = KafkaProducer(
-            bootstrap_servers="kafka:29092",
+            bootstrap_servers="38.242.221.32:9092",
             value_serializer=lambda x: json.dumps(x).encode("utf-8"),
             max_request_size=104857600,
         )
