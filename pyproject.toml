@@ -70,6 +70,7 @@ pyzbar = "0.1.9"
 pyzipper = "0.3.6"
 rarfile = "4.1"
 redis = "4.5.4"
+ssdeep = "3.4"
 requests = "^2.32.3"
 rpmfile = "1.1.1"
 signify = "0.5.1"
@@ -93,7 +94,8 @@ certifi = "^2025.1.31"
 black = "^25.1.0"
 isort = "^6.0.1"
 flake8 = "^7.1.2"
-
+[tool.poetry.build-constraints]
+ssdeep = { setuptools = "<78" }
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
