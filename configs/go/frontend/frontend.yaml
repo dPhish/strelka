@@ -14,7 +14,7 @@ gatekeeper:
 response:
   log: "/var/log/strelka/strelka.log"
 broker:
-  bootstrap: "kafka:29092"
+  bootstrap: "38.242.221.32:9092"
   protocol: "PLAINTEXT"
   certlocation: ""
   keylocation: ""

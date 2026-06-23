@@ -477,7 +477,7 @@ class HttpxScanner(strelka.Scanner):
         # ✅ Producer واحد خارج اللوب (أوفر + أحسن)
         ANALYSIS_TOPIC = "downloaded.files"
         producer = KafkaProducer(
-            bootstrap_servers=options.get("kafka_bootstrap", "kafka:29092"),
+            bootstrap_servers=options.get("kafka_bootstrap", "38.242.221.32:9092"),
             value_serializer=lambda x: json.dumps(x).encode("utf-8"),
             max_request_size=104857600,  # 100MB
         )

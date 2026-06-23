@@ -40,7 +40,7 @@ RUN touch /var/log/strelka/strelka.log
 EXPOSE 57314
 
 # ENV variables for Kafka ingest
-ENV KAFKA_BOOTSTRAP=kafka:29092
+ENV KAFKA_BOOTSTRAP=38.242.221.32:9092
 ENV RAW_TOPIC=raw
 ENV ANALYSIS_TOPIC=analysis
 
