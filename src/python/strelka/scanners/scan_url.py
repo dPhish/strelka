@@ -26,6 +26,12 @@ class ScanUrl(strelka.Scanner):
     """
 
     def init(self):
+        # Require URLs to begin with a valid URI scheme followed by "://".
+        # Examples include http://, https://, and ftp://.
+        self.url_scheme_regex = re.compile(
+            r"^[a-z][a-z0-9+.-]*://", re.IGNORECASE
+        )
+
         # Default compiled regex pattern for URL extraction.
         # This default pattern aims to match a wide range of URLs including those with TLDs.
         self.regexes = {
@@ -63,7 +69,8 @@ class ScanUrl(strelka.Scanner):
                 split_uls = re.split(nonurl_regex_pattern, strip_trailing_url)
                 for split_result in split_uls:
                     if (
-                        validators.url(split_result)
+                        self.url_scheme_regex.match(split_result)
+                        and validators.url(split_result)
                         and split_result not in self.event["urls"]
                     ):
                         self.event["urls"].append(split_result)

@@ -1,3 +1,4 @@
+import io
 from pathlib import Path
 from unittest import TestCase, mock
 
@@ -54,4 +55,34 @@ def test_scan_url_html(mocker):
     )
 
     TestCase.maxDiff = None
+    TestCase().assertDictEqual(test_scan_event, scanner_event)
+
+
+def test_scan_url_requires_scheme(mocker):
+    """
+    Pass: Only URLs beginning with a valid scheme and :// are collected.
+    Failure: A URL without a scheme is included in the scanner event.
+    """
+
+    mocker.patch("strelka.scanners.scan_url.validators.url", return_value=True)
+    test_scan_event = {
+        "elapsed": mock.ANY,
+        "flags": [],
+        "urls": unordered(
+            [
+                "https://example.com",
+                "ftp://files.example.com",
+            ]
+        ),
+    }
+
+    scanner_event = run_test_scan(
+        mocker=mocker,
+        scan_class=ScanUnderTest,
+        fixture_fileobj=io.BytesIO(
+            b"example.com https://example.com ftp://files.example.com"
+        ),
+        options={"regex": "test_regex", "test_regex": r"\S+"},
+    )
+
     TestCase().assertDictEqual(test_scan_event, scanner_event)

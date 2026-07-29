@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 from kafka import KafkaProducer
 import base64
 from datetime import datetime, timezone
+import validators
 
 # لو حابب في المستقبل تفعّل S3:
 # هتفك الكومنت عن boto3 وعن upload_to_s3 تحت، وتزود s3_bucket في options
@@ -55,8 +56,31 @@ DEFAULT_HTTPX_ARGS = [
     "-j",
 ]
 
+HTTP_URL_SCHEME_REGEX = re.compile(r"^https?://", re.IGNORECASE)
+
 
 # ================== HELPER FUNCTIONS ==================
+
+
+def is_valid_http_url(value: str) -> bool:
+    """Return True only for complete HTTP(S) URLs with a hostname."""
+    if not isinstance(value, str):
+        return False
+
+    candidate = value.strip()
+    if (
+        not candidate
+        or candidate != value
+        or any(character.isspace() for character in candidate)
+        or not HTTP_URL_SCHEME_REGEX.match(candidate)
+    ):
+        return False
+
+    try:
+        parsed = urlparse(candidate)
+        return bool(parsed.hostname) and bool(validators.url(candidate))
+    except (TypeError, ValueError):
+        return False
 
 
 def run_httpx(
@@ -71,6 +95,9 @@ def run_httpx(
     ويخلّيه يكتب الـ output بتاعه في ملف JSONL (ده الـ *وحيد* اللي بيتكتب على الديسك عن طريق httpx نفسه).
     كود الاسكانر نفسه مش بيكتب أي فايلات.
     """
+    if not is_valid_http_url(url):
+        raise ValueError("httpx target must be a valid HTTP(S) URL")
+
     args = [httpx_cmd, "-u", url, *(extra_args or []), "-o", str(raw_output)]
     cmd_str = " ".join(str(part) for part in args)
     print(f"[httpx] Running: {cmd_str}")
@@ -433,20 +460,17 @@ class HttpxScanner(strelka.Scanner):
         if sha256_shot:
             self.iocs.append({"type": "hash", "subtype": "sha256", "value": sha256_shot})
 
-    def _extract_url_from_text_file(self, data: bytes) -> Optional[str]:
-        """
-        يفك محتوى txt ويجيب أول سطر مش فاضي ويعتبره URL.
-        """
+    def _extract_urls_from_text_file(self, data: bytes) -> List[str]:
+        """Decode text input and return its non-empty, stripped lines."""
+        if not isinstance(data, bytes):
+            return []
+
         try:
             text = data.decode("utf-8", errors="ignore")
         except Exception:
-            return None
-        test = []
-        for line in text.splitlines():
-            test.append(line.strip())
-        if len(test) > 0:
-            return test 
-        return None
+            return []
+
+        return [line.strip() for line in text.splitlines() if line.strip()]
 
     def scan(self, data, file, options, expire_at):
         """
@@ -464,8 +488,19 @@ class HttpxScanner(strelka.Scanner):
         run_base_dir = options.get("run_base_dir", "/tmp/httpx_tmp")
 
         # نطلّع الـ URLs من محتوى الـ txt
-        urls = self._extract_url_from_text_file(data) or []
-        print(len(urls))
+        candidates = self._extract_urls_from_text_file(data)
+        valid_urls = [
+            candidate
+            for candidate in candidates
+            if is_valid_http_url(candidate)
+        ]
+        urls = list(dict.fromkeys(valid_urls))
+
+        if len(valid_urls) != len(candidates):
+            self.flags.append("httpx_invalid_url")
+
+        if not urls:
+            return
 
         # ✅ جهّز uuid_part مرة واحدة عشان يبقى متاح للـ BODY والـ SCREENSHOT
         file_name = getattr(file, "name", "") or ""
@@ -488,13 +523,6 @@ class HttpxScanner(strelka.Scanner):
 
             try:
                 run_dir = create_run_directory(run_base_dir)
-
-                if not url:
-                    url = getattr(file, "name", None)
-
-                if not url:
-                    self.flags.append("httpx_no_url")
-                    continue
 
                 transformed["input_url"] = url
 

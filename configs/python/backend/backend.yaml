@@ -776,5 +776,4 @@ scanners:
     - positive:
         flavors:
           - 'text/plain'
-          - 'application/zip'
       priority: 5
