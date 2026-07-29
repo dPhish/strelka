@@ -509,13 +509,16 @@ class HttpxScanner(strelka.Scanner):
         else:
             uuid_part = "unknown"
 
-        # ✅ Producer واحد خارج اللوب (أوفر + أحسن)
+        # ✅ Producer واحد بس لكل عمر السكانر (الأنستانس نفسه بيتكاش في strelka)
+        # بدل ما نعمل KafkaProducer جديد (اتصال + handshake) في كل استدعاء لـ scan()
         ANALYSIS_TOPIC = "downloaded.files"
-        producer = KafkaProducer(
-            bootstrap_servers=options.get("kafka_bootstrap", "38.242.221.32:9092"),
-            value_serializer=lambda x: json.dumps(x).encode("utf-8"),
-            max_request_size=104857600,  # 100MB
-        )
+        if getattr(self, "producer", None) is None:
+            self.producer = KafkaProducer(
+                bootstrap_servers=options.get("kafka_bootstrap", "38.242.221.32:9092"),
+                value_serializer=lambda x: json.dumps(x).encode("utf-8"),
+                max_request_size=104857600,  # 100MB
+            )
+        producer = self.producer
 
         for url in urls:
             transformed = {}

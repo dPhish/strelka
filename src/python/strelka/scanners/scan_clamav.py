@@ -1,6 +1,7 @@
 import shutil
 import subprocess
 import tempfile
+import time
 
 from strelka import strelka
 
@@ -29,8 +30,8 @@ class ScanClamav(strelka.Scanner):
 
     ## To Do
     !!! question "To Do"
-        - The ClamAV signature database is currently pulled every scan as a POC. This could be converted to a
-          signature pull on a cadence, such as every 24 hours.
+        - The ClamAV signature database is pulled on a cadence (see `FRESHCLAM_INTERVAL_SEC`) instead of on every
+          scan, to avoid a `freshclam` network call adding latency to every scanned file.
 
     ## References
     !!! quote "References"
@@ -42,6 +43,11 @@ class ScanClamav(strelka.Scanner):
         - [Sara Kalupa](https://github.com/skalupa)
 
     """
+
+    # Minimum time between "freshclam" signature updates, shared across all
+    # scans in this worker process (not per file).
+    FRESHCLAM_INTERVAL_SEC = 24 * 60 * 60
+    _last_freshclam_run = 0
 
     def scan(self, data, file, options, expire_at):
         try:
@@ -59,12 +65,18 @@ class ScanClamav(strelka.Scanner):
                 tmp_data.flush()
                 tmp_data.seek(0)
 
-                # Run freshclam to gret the newest database signatures
-                stdout, stderr = subprocess.Popen(
-                    ["freshclam"],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                ).communicate(timeout=self.scanner_timeout)
+                # Only pull the newest database signatures on a cadence, not on
+                # every scanned file, since freshclam is a network call.
+                if (
+                    time.time() - ScanClamav._last_freshclam_run
+                    > self.FRESHCLAM_INTERVAL_SEC
+                ):
+                    subprocess.Popen(
+                        ["freshclam"],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    ).communicate(timeout=self.scanner_timeout)
+                    ScanClamav._last_freshclam_run = time.time()
 
                 temp_log = tempfile.NamedTemporaryFile(dir="/tmp/", mode="wb")
                 loglocation = "--log=" + temp_log.name
