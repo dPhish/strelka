@@ -497,6 +497,7 @@ The backend configuration contains two sections: one that controls the backend p
 * "limits.time_to_live": amount of time (in seconds) that the backend will run before shutting down (defaults to 900 seconds / 15 minutes, specify 0 to disable)
 * "limits.max_depth": maximum depth that extracted files will be processed by the backend (defaults to 15)
 * "limits.distribution": amount of time (in seconds) that a single file can be distributed to all scanners (defaults to 600 seconds / 10 minutes)
+* "limits.request": amount of time (in seconds) allowed for a persistent Kafka task after a backend claims it (defaults to 900 seconds / 15 minutes). Time spent waiting in the `tasks:persistent` queue does not count toward this limit.
 * "limits.scanner": amount of time (in seconds) that a scanner can spend scanning a file (defaults to 150 seconds / 1.5 minutes, can be overridden per-scanner)
 * "coordinator.addr": network address of the coordinator (defaults to strelka_coordinator_1:6379)
 * "coordinator.db": Redis database of the coordinator (defaults to 0)

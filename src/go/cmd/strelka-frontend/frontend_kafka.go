@@ -29,6 +29,8 @@ type RawKafkaMessage struct {
 	Meta     map[string]string `json:"meta"`
 }
 
+const persistentTaskQueue = "tasks:persistent"
+
 // ==============================
 //  Start Kafka Ingest
 // ==============================
@@ -88,22 +90,7 @@ func (s *server) processRawMessage(raw RawKafkaMessage) {
 	keyd := fmt.Sprintf("data:%s", taskID)
 	keye := fmt.Sprintf("event:%s", taskID)
 
-	// Deadline — like ScanFile
-	deadline := time.Now().Add(2 * time.Minute)
-
-	// Push file contents to Redis as ONE CHUNK
-	p := s.coordinator.cli.Pipeline()
-	p.RPush(ctx, keyd, data)
-	p.ExpireAt(ctx, keyd, deadline)
-	p.ExpireAt(ctx, keye, deadline)
-	if _, err := p.Exec(ctx); err != nil {
-		log.Printf("Redis write error for raw id=%s task id=%s: %v", raw.Id, taskID, err)
-		return
-	}
-
-	log.Printf("📥 Stored file raw id=%s as task id=%s in Redis key %s", raw.Id, taskID, keyd)
-
-	// Build request metadata
+	// Build request metadata before writing non-expiring data to Redis.
 	reqObj := map[string]interface{}{
 		"task_id": taskID,
 		"id":      taskID, // important: Strelka workers usually use "id" to resolve data:<id> and event:<id>
@@ -120,27 +107,37 @@ func (s *server) processRawMessage(raw RawKafkaMessage) {
 		reqObj["meta"] = raw.Meta
 	}
 
-	// Add to Redis sorted task list
 	reqJSON, err := json.Marshal(reqObj)
 	if err != nil {
 		log.Printf("Failed to marshal task raw id=%s task id=%s: %v", raw.Id, taskID, err)
 		return
 	}
 
-	err = s.coordinator.cli.ZAdd(
+	// Kafka tasks wait indefinitely in a queue that the manager does not expire.
+	// Store the data and queue member atomically so a failed enqueue cannot leave
+	// non-expiring file data orphaned in Redis.
+	enqueuedAt := time.Now()
+	p := s.coordinator.cli.TxPipeline()
+	p.RPush(ctx, keyd, data)
+	p.ZAdd(
 		ctx,
-		"tasks",
+		persistentTaskQueue,
 		&redis.Z{
-			Score:  float64(deadline.Unix()),
+			Score:  float64(enqueuedAt.UnixNano()) / float64(time.Second),
 			Member: reqJSON,
 		},
-	).Err()
-	if err != nil {
-		log.Printf("Failed to add task raw id=%s task id=%s to Redis: %v", raw.Id, taskID, err)
+	)
+	if _, err := p.Exec(ctx); err != nil {
+		log.Printf("Failed to store and queue raw id=%s task id=%s: %v", raw.Id, taskID, err)
 		return
 	}
 
-	log.Printf("📝 Added task raw id=%s task id=%s to Redis sorted set 'tasks'", raw.Id, taskID)
+	log.Printf(
+		"Stored and queued raw id=%s as task id=%s in Redis sorted set %q",
+		raw.Id,
+		taskID,
+		persistentTaskQueue,
+	)
 
 	// Now wait for scanning result
 	go s.waitForResult(taskID, keye, reqObj)

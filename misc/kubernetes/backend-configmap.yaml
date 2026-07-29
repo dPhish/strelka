@@ -11,6 +11,8 @@ data:
       time_to_live: 900
       max_depth: 15
       distribution: 600
+      # Starts after a persistent Kafka task is claimed; queue wait is unlimited.
+      request: 900
       scanner: 150
     coordinator:
       addr: 'coordinator.strelka:6379'

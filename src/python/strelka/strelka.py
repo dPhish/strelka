@@ -26,11 +26,15 @@ from opentelemetry import context, trace
 from tldextract import TLDExtract
 
 from . import __namespace__
+from .task_queue import (
+    DEFAULT_REQUEST_TIMEOUT_SECONDS,
+    pop_task,
+    prepare_task_deadline,
+)
 from .telemetry.traces import get_tracer
 
 from kafka import KafkaProducer
 import json
-
 
 
 class RequestTimeout(Exception):
@@ -154,6 +158,12 @@ class Backend(object):
         self.blocking_pop_time_sec: int = backend_cfg.get("coordinator", {}).get(
             "blocking_pop_time_sec", 0
         )
+        self.request_timeout_sec = int(
+            self.limits.get("request", DEFAULT_REQUEST_TIMEOUT_SECONDS)
+        )
+        if self.request_timeout_sec <= 0:
+            raise ValueError("limits.request must be greater than zero")
+        self.next_task_queue = 0
 
         self.tracer = get_tracer(
             backend_cfg.get("telemetry", {}).get("traces", {}),
@@ -216,6 +226,32 @@ class Backend(object):
 
         if not self.coordinator:
             logging.info("backend started without coordinator")
+
+    def _pop_task(self):
+        """Pop fairly from expiring client tasks and persistent Kafka tasks."""
+        task, self.next_task_queue = pop_task(
+            self.coordinator,
+            self.blocking_pop_time_sec,
+            self.next_task_queue,
+        )
+        return task
+
+    def _prepare_task_deadline(
+        self,
+        queue_name,
+        queue_score: float,
+        root_id: str,
+        now: Optional[float] = None,
+    ) -> int:
+        """Start the Redis/request TTL when a persistent task is claimed."""
+        return prepare_task_deadline(
+            self.coordinator,
+            queue_name,
+            queue_score,
+            self.request_timeout_sec,
+            root_id,
+            now=now,
+        )
 
     def taste_mime(self, data: bytes) -> list:
         """Tastes file data with libmagic."""
@@ -288,23 +324,15 @@ class Backend(object):
                 if time.time() >= work_expire:
                     break
 
-            # Retrieve request task from Redis coordinator
-            if self.blocking_pop_time_sec > 0:
-                task = self.coordinator.bzpopmin(
-                    "tasks", timeout=self.blocking_pop_time_sec
-                )
-                if task is None:
-                    continue
-
-                (queue_name, task_item, expire_at) = task
-            else:
-                task = self.coordinator.zpopmin("tasks", count=1)
-                if len(task) == 0:
+            # Client/gRPC tasks retain their original deadline behavior. Kafka
+            # tasks wait in a separate queue until a backend claims them.
+            task = self._pop_task()
+            if task is None:
+                if self.blocking_pop_time_sec == 0:
                     time.sleep(0.25)
-                    continue
+                continue
 
-                # Get request metadata and Redis context deadline UNIX timestamp
-                (task_item, expire_at) = task[0]
+            queue_name, task_item, queue_score = task
 
             traceparent = None
             task_info = {}
@@ -331,7 +359,11 @@ class Backend(object):
                     )
                     file = File(pointer=root_id)
 
-            expire_at = math.ceil(expire_at)
+            expire_at = self._prepare_task_deadline(
+                queue_name,
+                queue_score,
+                root_id,
+            )
             timeout = math.ceil(expire_at - time.time())
 
             # If the deadline has passed, bail out
