@@ -76,6 +76,9 @@ scanners:
         flavors:
           - '*'
       priority: 5
+      options:
+        clamd_host: 'clamd'
+        clamd_port: 3310
 #  'ScanCcn':
 #    - positive:
 #        flavors:

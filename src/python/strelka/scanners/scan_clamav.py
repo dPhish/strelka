@@ -1,15 +1,14 @@
-import shutil
-import subprocess
-import tempfile
-import time
+import socket
+import struct
 
 from strelka import strelka
 
 
 class ScanClamav(strelka.Scanner):
     """
-    This scanner runs against a given file and returns a ClamAV scan that has a determination if the file is infected
-    or not based on the ClamAV signature database.
+    This scanner streams file data to a running ClamAV daemon (clamd) using its INSTREAM protocol and
+    returns a determination if the file is infected or not, based on the ClamAV signature database
+    loaded by that daemon.
 
     Scanner Type: Collection
 
@@ -19,23 +18,29 @@ class ScanClamav(strelka.Scanner):
     ## Detection Use Cases
     !!! info "Detection Use Cases"
         - **Scan Determination**
-            - This scanner provides a inital determination on a file if it is infected or not based on the
-              the ClamAV signature database.
+            - This scanner provides an initial determination on a file if it is infected or not based on
+              the ClamAV signature database loaded by the clamd daemon it connects to.
 
     ## Known Limitations
     !!! warning "Known Limitations"
         - **ClamAV Signature Database**
             - This scanner relies on the ClamAV signature database which is not necesarily all-encompassing. Though
               the scanner may return a determination, users should be advise that this is not exaustive.
+        - **Requires a reachable clamd daemon**
+            - This scanner does not run ClamAV locally and does not manage signature updates. It requires a clamd
+              daemon reachable at `clamd_host`:`clamd_port` (options) on the backend's network; that daemon is
+              responsible for keeping its own signature database up to date (e.g. via its own freshclam process).
 
-    ## To Do
-    !!! question "To Do"
-        - The ClamAV signature database is pulled on a cadence (see `FRESHCLAM_INTERVAL_SEC`) instead of on every
-          scan, to avoid a `freshclam` network call adding latency to every scanned file.
+    ## Options
+    !!! info "Options"
+        - `clamd_host` -- hostname/IP of the clamd daemon (defaults to `clamd`)
+        - `clamd_port` -- TCP port of the clamd daemon (defaults to `3310`)
+        - `clamd_timeout` -- socket connect/read timeout in seconds (defaults to `30`)
 
     ## References
     !!! quote "References"
     - [ClamAV Documentation Source](https://docs.clamav.net/Introduction.html)
+    - [clamd usage / INSTREAM protocol](https://docs.clamav.net/manual/Usage/Scanning.html#clamd)
     - [BlogPost on ClamAV Scanner](https://simovits.com/strelka-let-us-build-a-scanner/)
 
     ## Contributors
@@ -44,65 +49,48 @@ class ScanClamav(strelka.Scanner):
 
     """
 
-    # Minimum time between "freshclam" signature updates, shared across all
-    # scans in this worker process (not per file).
-    FRESHCLAM_INTERVAL_SEC = 24 * 60 * 60
-    _last_freshclam_run = 0
+    CHUNK_SIZE = 8192
 
     def scan(self, data, file, options, expire_at):
+        host = options.get("clamd_host", "clamd")
+        port = options.get("clamd_port", 3310)
+        timeout = options.get("clamd_timeout", 30)
+
         try:
-            # Check if ClamAV package is installed
-            if not shutil.which("clamscan"):
-                self.flags.append("clamav_not_installed_error")
-                return
-        except Exception as e:
-            self.flags.append(str(e))
+            reply = self._instream(data, host, port, timeout)
+        except (OSError, socket.timeout) as e:
+            self.flags.append("clamd_connection_error")
+            self.event["error"] = str(e)
             return
 
-        try:
-            with tempfile.NamedTemporaryFile(dir="/tmp/", mode="wb") as tmp_data:
-                tmp_data.write(data)
-                tmp_data.flush()
-                tmp_data.seek(0)
+        # Expected replies: "stream: OK", "stream: <Signature> FOUND", "stream: <reason> ERROR"
+        _, _, verdict = reply.partition(": ")
 
-                # Only pull the newest database signatures on a cadence, not on
-                # every scanned file, since freshclam is a network call.
-                if (
-                    time.time() - ScanClamav._last_freshclam_run
-                    > self.FRESHCLAM_INTERVAL_SEC
-                ):
-                    subprocess.Popen(
-                        ["freshclam"],
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                    ).communicate(timeout=self.scanner_timeout)
-                    ScanClamav._last_freshclam_run = time.time()
+        if verdict == "OK":
+            self.event["infected"] = False
+        elif verdict.endswith(" FOUND"):
+            self.event["infected"] = True
+            self.event["signature"] = verdict[: -len(" FOUND")]
+        else:
+            self.flags.append("clamd_unexpected_response")
+            self.event["raw_response"] = reply
 
-                temp_log = tempfile.NamedTemporaryFile(dir="/tmp/", mode="wb")
-                loglocation = "--log=" + temp_log.name
+    def _instream(self, data: bytes, host: str, port: int, timeout: float) -> str:
+        """Streams file data to clamd's INSTREAM command and returns its reply."""
+        with socket.create_connection((host, port), timeout=timeout) as sock:
+            sock.sendall(b"zINSTREAM\0")
 
-                # Run the actual ClamAV scan and report to local temp log file
-                process = subprocess.Popen(
-                    ["clamscan", "--disable-cache", loglocation, tmp_data.name],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                )
-                stdout, stderr = process.communicate()
+            for offset in range(0, len(data), self.CHUNK_SIZE):
+                chunk = data[offset : offset + self.CHUNK_SIZE]
+                sock.sendall(struct.pack(">L", len(chunk)) + chunk)
 
-                with open(temp_log.name, "r") as file:
-                    for line in file:
-                        if ":" in line:
-                            # Attempt to split out scan information
-                            splitline = line.split(":")
-                            self.event[splitline[0]] = splitline[1].strip()
-                        else:
-                            continue
+            sock.sendall(struct.pack(">L", 0))  # zero-length chunk ends the stream
 
-        except strelka.ScannerTimeout:
-            raise
-        except Exception:
-            self.flags.append("clamAV_Scan_process_error")
-            raise
-        finally:
-            # Ensure that tempfile gets closed out if there are any issues
-            tmp_data.close()
+            response = b""
+            while b"\0" not in response:
+                buf = sock.recv(4096)
+                if not buf:
+                    break
+                response += buf
+
+        return response.decode("utf-8", errors="replace").strip("\x00").strip()
