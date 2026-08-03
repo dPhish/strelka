@@ -19,7 +19,13 @@ class ScanEntropy(strelka.Scanner):
         try:
             decoded = data.decode().strip()
             if validators.url(decoded):
-                domain = self.extract(decoded).domain
+                extracted = self.extract(decoded)
+                domain = extracted.domain
+                if not extracted.suffix and extracted.subdomain:
+                    # Unrecognized TLD (e.g. reserved "*.test"/"*.invalid"): tldextract
+                    # has nothing to split off as a suffix, so it puts the last label
+                    # in `domain` instead. Fall back to the label right before it.
+                    domain = extracted.subdomain.rsplit(".", 1)[-1]
                 if domain:
                     entropy_data = domain.encode()
         except UnicodeDecodeError:
